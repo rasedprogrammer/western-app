@@ -1,0 +1,56 @@
+import { UserAddOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input } from "antd";
+const { Item } = Form;
+
+const Login = () => {
+  const onFinish = (valuse) => {
+    console.log(valuse);
+  };
+
+  return (
+    <div className="flex">
+      {/* Image Section */}
+      <div className="w-1/2 hidden md:flex justify-center items-center">
+        <img
+          src="/bank-img.jpg"
+          alt="Bank Icon"
+          className="w-4/5 object-contain"
+        />
+      </div>
+      {/* Login Form Section */}
+      <div className="w-full md:w-1/2 flex justify-center items-center p-6 bg-white">
+        <Card className="w-full max-w-sm shadow-xl">
+          <h1 className="text-2xl font-semibold mb-6 text-center">
+            Bank Login
+          </h1>
+          <Form name="login" onFinish={onFinish} layout="vertical">
+            <Item name="username" label="Username" rules={[{ required: true }]}>
+              <Input
+                prefix={<UserAddOutlined />}
+                placeholder="Enter Your Username!"
+              ></Input>
+            </Item>
+            <Item name="password" label="Password" rules={[{ required: true }]}>
+              <Input
+                prefix={<UserAddOutlined />}
+                placeholder="Enter Your Password!"
+              ></Input>
+            </Item>
+            <Item name="username" label="Username" rules={[{ required: true }]}>
+              <Button
+                htmlType="submit"
+                type="text"
+                block
+                className="!bg-blue-500 !font-bold !text-white"
+              >
+                Login
+              </Button>
+            </Item>
+          </Form>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
