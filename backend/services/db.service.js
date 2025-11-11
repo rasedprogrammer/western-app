@@ -1,32 +1,57 @@
 require("dotenv").config();
+const mongoose = require("mongoose");
 
-const mongo = require("mongoose");
+// ✅ Connect to MongoDB
+mongoose
+  .connect(process.env.DB_URL)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-const url = process.env.DB_URL;
-
-mongo.connect(url);
-
+// ✅ Find all records
 const findAllRecord = async (schema) => {
-  const dbRes = await schema.find();
-  return dbRes;
+  try {
+    return await schema.find();
+  } catch (err) {
+    console.error("Error finding records:", err);
+    throw err;
+  }
 };
 
+// ✅ Create new record
 const createNewRecord = async (data, schema) => {
-  const dbRes = await schema(data).save();
-  return dbRes;
+  try {
+    const dbRes = await schema.create(data);
+    return dbRes;
+  } catch (err) {
+    console.error("Error creating record:", err);
+    throw err;
+  }
 };
 
+// ✅ Update record
 const updateRecord = async (id, data, schema) => {
-  const dbRes = await schema.findByIdAndUpdate(id, data, { new: true });
-  return dbRes;
+  try {
+    const dbRes = await schema.findByIdAndUpdate(id, data, { new: true });
+    return dbRes;
+  } catch (err) {
+    console.error("Error updating record:", err);
+    throw err;
+  }
 };
 
+// ✅ Delete record
 const deleteRecord = async (id, schema) => {
-  const dbRes = await schema.findByIdAndDelete(id);
-  return dbRes;
+  try {
+    const dbRes = await schema.findByIdAndDelete(id);
+    return dbRes;
+  } catch (err) {
+    console.error("Error deleting record:", err);
+    throw err;
+  }
 };
 
-module.export = {
+// ✅ Correct export
+module.exports = {
   findAllRecord,
   createNewRecord,
   updateRecord,

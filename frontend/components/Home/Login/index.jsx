@@ -1,4 +1,4 @@
-import { UserAddOutlined } from "@ant-design/icons";
+import { UserAddOutlined, LockOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input } from "antd";
 const { Item } = Form;
 
@@ -32,11 +32,11 @@ const Login = () => {
             </Item>
             <Item name="password" label="Password" rules={[{ required: true }]}>
               <Input
-                prefix={<UserAddOutlined />}
+                prefix={<LockOutlined />}
                 placeholder="Enter Your Password!"
               ></Input>
             </Item>
-            <Item name="username" label="Username" rules={[{ required: true }]}>
+            <Item name="submit" rules={[{ required: true }]}>
               <Button
                 htmlType="submit"
                 type="text"

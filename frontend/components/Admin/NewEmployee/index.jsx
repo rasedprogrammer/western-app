@@ -7,6 +7,9 @@ import {
 } from "@ant-design/icons";
 const { Item } = Form;
 const NewEmployee = () => {
+  // States Collection
+  const [empForm] = Form.useForm();
+  // Columns for Table
   const columns = [
     {
       title: "Profile",
@@ -56,12 +59,16 @@ const NewEmployee = () => {
       ),
     },
   ];
+  // Create Employee
+  const onFinish = (values) => {
+    console.log(values);
+  };
 
   return (
     <Adminlayout>
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add New Employee">
-          <Form layout="vertical">
+          <Form form={empForm} onFinish={onFinish} layout="vertical">
             <Item label="Profile" name="xyz">
               <Input type="file" />
             </Item>
