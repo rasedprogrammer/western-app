@@ -5,12 +5,9 @@ import {
   EditOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import { trimData } from "../../../modules/modules";
-import axios from "axios";
+import { trimData, http } from "../../../modules/modules";
 import swal from "sweetalert";
 import { useState } from "react";
-
-axios.defaults.baseURL = import.meta.env.VITE_BASEURL;
 
 const { Item } = Form;
 const NewEmployee = () => {
@@ -72,7 +69,8 @@ const NewEmployee = () => {
     try {
       setLoading(true);
       const finalObj = trimData(values);
-      const { data } = await axios.post(`/api/users`, finalObj);
+      const httpReq = http();
+      const { data } = await httpReq.post(`/api/users`, finalObj);
       swal("Success", "Employee Created Successfully!", "success");
       empForm.resetFields();
     } catch (error) {
