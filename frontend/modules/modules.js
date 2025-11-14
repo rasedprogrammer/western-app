@@ -12,7 +12,7 @@ export const http = (accessToken = null) => {
 export const trimData = (obj) => {
   const finalData = {};
   for (let key in obj) {
-    finalData[key] = obj[key]?.trim().toLowerCase();
+    finalData[key] = obj[key]?.trim();
   }
   return finalData;
 };

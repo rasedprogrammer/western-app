@@ -6,9 +6,10 @@ const logger = require("morgan");
 const app = express();
 const cors = require("cors");
 
-// Requires User Routes
+// Requires Routes Define Here
 const usersRouter = require("./routes/users.routes");
 const uploadRouter = require("./routes/upload.routes");
+const sendEmailRouter = require("./routes/send-email.routes");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -22,9 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// User Middleware Level
+// Route Middleware Level
 app.use("/api/users", usersRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/send-email", sendEmailRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -73,6 +73,13 @@ const NewEmployee = () => {
       finalObj.profile = photo ? photo : "bankImages/dummy.png";
       const httpReq = http();
       const { data } = await httpReq.post(`/api/users`, finalObj);
+      const emailObj = {
+        email: finalObj.email,
+        password: finalObj.password,
+      };
+      const res = await httpReq.post(`/api/send-email`, emailObj);
+      console.log("Email Send Response", res);
+
       swal("Success", "Employee Created Successfully!", "success");
       empForm.resetFields();
       setPhoto(null);
