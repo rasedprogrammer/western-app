@@ -5,10 +5,18 @@ import {
   EditOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
+import { trimData } from "../../../modules/modules";
+import axios from "axios";
+import swal from "sweetalert";
+import { useState } from "react";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASEURL;
+
 const { Item } = Form;
 const NewEmployee = () => {
   // States Collection
   const [empForm] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   // Columns for Table
   const columns = [
     {
@@ -60,8 +68,27 @@ const NewEmployee = () => {
     },
   ];
   // Create Employee
-  const onFinish = (values) => {
-    console.log(values);
+  const onFinish = async (values) => {
+    try {
+      setLoading(true);
+      const finalObj = trimData(values);
+      const { data } = await axios.post(`/api/users`, finalObj);
+      swal("Success", "Employee Created Successfully!", "success");
+      empForm.resetFields();
+    } catch (error) {
+      if (error?.response?.data?.error?.code === 11000) {
+        empForm.setFields([
+          {
+            name: "email",
+            errors: ["Email Already Exists!"],
+          },
+        ]);
+      } else {
+        swal("Warning", "Try again later", "warning");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,23 +110,20 @@ const NewEmployee = () => {
               <Item name="mobile" label="Mobile" rules={[{ required: true }]}>
                 <Input type="number" />
               </Item>
-              <Item name="email" label="Email" rules={[{ required: true }]}>
-                <Input />
-              </Item>
-              <Item
-                name="password"
-                label="Password"
-                rules={[{ required: true }]}
-              >
-                <Input />
-              </Item>
             </div>
+            <Item name="email" label="Email" rules={[{ required: true }]}>
+              <Input />
+            </Item>
+            <Item name="password" label="Password" rules={[{ required: true }]}>
+              <Input />
+            </Item>
             {/* Employee Address Section */}
             <Item label="Emplyee Address" name="address">
               <Input.TextArea />
             </Item>
             <Item>
               <Button
+                loading={loading}
                 type="text"
                 htmlType="submit"
                 className="!bg-blue-500 !font-bold !text-white w-full"

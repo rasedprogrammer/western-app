@@ -12,10 +12,10 @@ const createData = async (req, res, schema) => {
   } catch (error) {
     // Check if it's a duplicate key error
     if (error.code === 11000) {
-      return res.status(400).json({
+      return res.status(422).json({
         message: "Duplicate field value entered",
         success: false,
-        field: error.keyValue,
+        error,
       });
     }
 
