@@ -1,25 +1,53 @@
-import { Button, Card, Form, Input, Table } from "antd";
+import { Button, Card, Form, Input, Image, message, Table } from "antd";
 import Adminlayout from "../../Layout/Adminlayout";
 import {
   DeleteOutlined,
   EditOutlined,
   EyeInvisibleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { trimData, http } from "../../../modules/modules";
 import swal from "sweetalert";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const { Item } = Form;
 const NewEmployee = () => {
   // States Collection
   const [empForm] = Form.useForm();
+  const [messageApi, context] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
+  const [allEmployee, setAllEmployee] = useState([]);
+
+  // Fetch All Employee
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const httpReq = http();
+        const { data } = await httpReq.get("/api/users");
+        console.log(data);
+
+        setAllEmployee(data.data);
+      } catch (error) {
+        messageApi.error("Unable To Fetch Employee Data");
+      }
+    };
+    fetcher();
+  }, []);
+
   // Columns for Table
   const columns = [
     {
       title: "Profile",
       key: "profile",
+      render: (src, obj) => (
+        <Image
+          src={`${import.meta.env.VITE_BASEURL}/${obj.profile}`}
+          className="rounded-full"
+          width={40}
+          height={40}
+        />
+      ),
     },
     {
       title: "Fullname",
@@ -44,12 +72,17 @@ const NewEmployee = () => {
     {
       title: "Action",
       key: "action",
-      render: () => (
+      // fixed: "right",
+      render: (_, obj) => (
         <div className="flex gap-1">
           <Button
             type="text"
-            className="!text-pink-500 !bg-pink-100"
-            icon={<EyeInvisibleOutlined />}
+            className={`${
+              obj.isActive
+                ? "!text-indigo-500 !bg-indigo-100"
+                : "!text-pink-500 !bg-pink-100"
+            }`}
+            icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
           />
           <Button
             type="text"
@@ -115,6 +148,7 @@ const NewEmployee = () => {
 
   return (
     <Adminlayout>
+      {context}
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add New Employee">
           <Form form={empForm} onFinish={onFinish} layout="vertical">
@@ -155,8 +189,16 @@ const NewEmployee = () => {
             </Item>
           </Form>
         </Card>
-        <Card title="Employee List" className="md:col-span-2">
-          <Table columns={columns} dataSource={[{}, {}]} />
+        <Card
+          title="Employee List"
+          className="md:col-span-2"
+          style={{ overflowX: "auto" }}
+        >
+          <Table
+            columns={columns}
+            dataSource={allEmployee}
+            scroll={{ x: "max-content" }}
+          />
         </Card>
       </div>
     </Adminlayout>

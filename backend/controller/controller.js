@@ -1,5 +1,21 @@
 const dbService = require("../services/db.service");
 
+const getData = async (req, res, schema) => {
+  try {
+    const dbRes = await dbService.findAllRecord(schema);
+    return res.status(200).json({
+      message: "Record Found !",
+      data: dbRes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      error: error,
+    });
+  }
+};
+
 const createData = async (req, res, schema) => {
   try {
     const data = req.body;
@@ -22,11 +38,12 @@ const createData = async (req, res, schema) => {
     res.status(500).json({
       message: "Internal Server Error",
       success: false,
-      error: error.message,
+      error,
     });
   }
 };
 
 module.exports = {
   createData,
+  getData,
 };
