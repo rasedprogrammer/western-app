@@ -5,6 +5,7 @@ const getData = async (req, res, schema) => {
     const dbRes = await dbService.findAllRecord(schema);
     return res.status(200).json({
       message: "Record Found !",
+      success: true,
       data: dbRes,
     });
   } catch (error) {
@@ -43,7 +44,27 @@ const createData = async (req, res, schema) => {
   }
 };
 
+const updateData = async (req, res, schema) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+    const dbRes = await dbService.updateRecord(id, data, schema);
+    return res.status(200).json({
+      message: "Record updated successfully!",
+      success: true,
+      data: dbRes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      error,
+    });
+  }
+};
+
 module.exports = {
   createData,
   getData,
+  updateData,
 };

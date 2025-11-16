@@ -1,4 +1,13 @@
-import { Button, Card, Form, Input, Image, message, Table } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Image,
+  message,
+  Table,
+  Popconfirm,
+} from "antd";
 import Adminlayout from "../../Layout/Adminlayout";
 import {
   DeleteOutlined,
@@ -18,6 +27,7 @@ const NewEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
+  const [no, setNo] = useState(0);
 
   // Fetch All Employee
   useEffect(() => {
@@ -33,7 +43,7 @@ const NewEmployee = () => {
       }
     };
     fetcher();
-  }, []);
+  }, [no]);
 
   // Columns for Table
   const columns = [
@@ -75,15 +85,22 @@ const NewEmployee = () => {
       // fixed: "right",
       render: (_, obj) => (
         <div className="flex gap-1">
-          <Button
-            type="text"
-            className={`${
-              obj.isActive
-                ? "!text-indigo-500 !bg-indigo-100"
-                : "!text-pink-500 !bg-pink-100"
-            }`}
-            icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-          />
+          <Popconfirm
+            title="Are you sure?"
+            description="Once you update, you can also re-update it!"
+            onCancel={() => messageApi.info("No changes occur !")}
+            onConfirm={() => updateIsActive(obj._id, obj.isActive)}
+          >
+            <Button
+              type="text"
+              className={`${
+                obj.isActive
+                  ? "!text-indigo-500 !bg-indigo-100"
+                  : "!text-pink-500 !bg-pink-100"
+              }`}
+              icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+            />
+          </Popconfirm>
           <Button
             type="text"
             className="!text-green-500 !bg-green-100"
@@ -104,6 +121,7 @@ const NewEmployee = () => {
       setLoading(true);
       const finalObj = trimData(values);
       finalObj.profile = photo ? photo : "bankImages/dummy.png";
+      finalObj.key = finalObj.email;
       const httpReq = http();
       const { data } = await httpReq.post(`/api/users`, finalObj);
       const emailObj = {
@@ -116,6 +134,7 @@ const NewEmployee = () => {
       swal("Success", "Employee Created Successfully!", "success");
       empForm.resetFields();
       setPhoto(null);
+      setNo(no + 1);
     } catch (error) {
       if (error?.response?.data?.error?.code === 11000) {
         empForm.setFields([
@@ -129,6 +148,22 @@ const NewEmployee = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Update is Active
+  const updateIsActive = async (id, isActive) => {
+    try {
+      const obj = {
+        isActive: !isActive,
+      };
+      const httpReq = http();
+      await httpReq.put(`/api/users/${id}`, obj);
+
+      messageApi.success("Record updated successfully !");
+      setNo(no + 1);
+    } catch (error) {
+      messageApi.error("Unable to update isActive!");
     }
   };
 
