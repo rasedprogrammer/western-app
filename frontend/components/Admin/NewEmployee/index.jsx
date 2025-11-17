@@ -106,11 +106,18 @@ const NewEmployee = () => {
             className="!text-green-500 !bg-green-100"
             icon={<EditOutlined />}
           />
-          <Button
-            type="text"
-            className="!text-rose-500 !bg-rose-100"
-            icon={<DeleteOutlined />}
-          />
+          <Popconfirm
+            title = "Are you sure ?"
+            description = "Once you delete, you can not re-store it!"
+            onCancel={() => messageApi.info("Your data is safe!")}
+            onConfirm={() => onDeleteUser(obj._id)}
+          >
+              <Button
+              type="text"
+              className="!text-rose-500 !bg-rose-100"
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
         </div>
       ),
     },
@@ -166,6 +173,18 @@ const NewEmployee = () => {
       messageApi.error("Unable to update isActive!");
     }
   };
+
+  // Delete User
+  const onDeleteUser = async (id) => {
+    try {
+      const httpReq = http();
+      await httpReq.delete(`/api/users/${id}`);
+      messageApi.success("Employee Deleted Successfully !");
+      setNo(no + 1);
+    } catch (error) {
+      messageApi.error("Unable to delete user!")
+    }
+  }
 
   // Handle Upload
   const handleUpload = async (e) => {

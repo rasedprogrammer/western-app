@@ -63,8 +63,28 @@ const updateData = async (req, res, schema) => {
   }
 };
 
+
+const deleteData = async (req, res, schema) => {
+  try {
+    const { id } = req.params;
+    const dbRes = await dbService.deleteRecord(id, schema);
+    return res.status(200).json({
+      message: "Record deleted successfully!",
+      success: true,
+      data: dbRes,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      error,
+    });
+  }
+};
+
 module.exports = {
   createData,
   getData,
   updateData,
+  deleteData
 };
