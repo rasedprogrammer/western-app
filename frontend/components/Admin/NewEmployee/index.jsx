@@ -27,6 +27,7 @@ const NewEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
+  const [edit, setEdit] = useState(null);
   const [no, setNo] = useState(0);
 
   // Fetch All Employee
@@ -101,18 +102,25 @@ const NewEmployee = () => {
               icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
             />
           </Popconfirm>
-          <Button
-            type="text"
-            className="!text-green-500 !bg-green-100"
-            icon={<EditOutlined />}
-          />
           <Popconfirm
-            title = "Are you sure ?"
-            description = "Once you delete, you can not re-store it!"
+            title="Are you sure !"
+            description="Onec you update, you can re-update it!"
+            onCancel={() => messageApi.info("No changes occur !")}
+            onConfirm={() => onEditUser(obj)}
+          >
+            <Button
+              type="text"
+              className="!text-green-500 !bg-green-100"
+              icon={<EditOutlined />}
+            />
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure ?"
+            description="Once you delete, you can not re-store it!"
             onCancel={() => messageApi.info("Your data is safe!")}
             onConfirm={() => onDeleteUser(obj._id)}
           >
-              <Button
+            <Button
               type="text"
               className="!text-rose-500 !bg-rose-100"
               icon={<DeleteOutlined />}
@@ -174,6 +182,32 @@ const NewEmployee = () => {
     }
   };
 
+  // Update User
+  const onEditUser = async (obj) => {
+    setEdit(obj);
+    empForm.setFieldsValue(obj);
+  };
+
+  const onUpdate = async (values) => {
+    try {
+      setLoading(true);
+      let finalObj = trimData(values);
+      if (photo) {
+        finalObj.profile = photo;
+      }
+      const httpReq = http();
+      await httpReq.put(`/api/users/${edit._id}`, finalObj);
+      messageApi.success("Employee Update Successfully !");
+      setNo(no + 1);
+      setEdit(null);
+      empForm.resetFields();
+    } catch (error) {
+      messageApi.error("Unable to update Employee!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Delete User
   const onDeleteUser = async (id) => {
     try {
@@ -182,9 +216,9 @@ const NewEmployee = () => {
       messageApi.success("Employee Deleted Successfully !");
       setNo(no + 1);
     } catch (error) {
-      messageApi.error("Unable to delete user!")
+      messageApi.error("Unable to delete user!");
     }
-  }
+  };
 
   // Handle Upload
   const handleUpload = async (e) => {
@@ -205,7 +239,11 @@ const NewEmployee = () => {
       {context}
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add New Employee">
-          <Form form={empForm} onFinish={onFinish} layout="vertical">
+          <Form
+            form={empForm}
+            onFinish={edit ? onUpdate : onFinish}
+            layout="vertical"
+          >
             <Item label="Profile" name="xyz">
               <Input onChange={handleUpload} type="file" />
             </Item>
@@ -225,21 +263,32 @@ const NewEmployee = () => {
               <Input />
             </Item>
             <Item name="password" label="Password" rules={[{ required: true }]}>
-              <Input />
+              <Input disabled={edit ? true : false} />
             </Item>
             {/* Employee Address Section */}
             <Item label="Emplyee Address" name="address">
               <Input.TextArea />
             </Item>
             <Item>
-              <Button
-                loading={loading}
-                type="text"
-                htmlType="submit"
-                className="!bg-blue-500 !font-bold !text-white w-full"
-              >
-                Submit
-              </Button>
+              {edit ? (
+                <Button
+                  loading={loading}
+                  type="text"
+                  htmlType="submit"
+                  className="!bg-rose-500 !font-bold !text-white w-full"
+                >
+                  Update
+                </Button>
+              ) : (
+                <Button
+                  loading={loading}
+                  type="text"
+                  htmlType="submit"
+                  className="!bg-blue-500 !font-bold !text-white w-full"
+                >
+                  Submit
+                </Button>
+              )}
             </Item>
           </Form>
         </Card>
