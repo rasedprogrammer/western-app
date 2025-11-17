@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   DashboardOutlined,
+  GiftOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
@@ -18,6 +19,11 @@ const Adminlayout = ({ children }) => {
       key: "/admin",
       icon: <DashboardOutlined />,
       label: <Link to="/admin">Dashboard</Link>,
+    },
+    {
+      key: "/admin/branding",
+      icon: <GiftOutlined />,
+      label: <Link to="/admin/branding">Branding</Link>,
     },
     {
       key: "/admin/new-employee",
