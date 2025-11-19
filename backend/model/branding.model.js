@@ -5,7 +5,8 @@ const { Schema } = mongo;
 const brandingSchema = new Schema(
   {
     bankName: String,
-    bankTagName: String,
+    bankTagLine: String,
+    bankLogo: String,
     bankAccountNo: String,
     bankTransactionId: String,
     bankAddress: String,
