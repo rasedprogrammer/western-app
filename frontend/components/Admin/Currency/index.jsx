@@ -5,26 +5,26 @@ import { trimData, http } from "../../../modules/modules";
 import { useEffect, useState } from "react";
 
 const { Item } = Form;
-const Branch = () => {
+const Currency = () => {
   // States Collection
-  const [branchForm] = Form.useForm();
+  const [currencyForm] = Form.useForm();
   const [messageApi, context] = message.useMessage();
   const [loading, setLoading] = useState(false);
-  const [allBranch, setAllBranch] = useState([]);
+  const [allCurrency, setAllCurrency] = useState([]);
   const [edit, setEdit] = useState(null);
   const [no, setNo] = useState(0);
 
-  // Fetch All Branch
+  // Fetch All Currency
   useEffect(() => {
     const fetcher = async () => {
       try {
         const httpReq = http();
-        const { data } = await httpReq.get("/api/branch");
+        const { data } = await httpReq.get("/api/currency");
         console.log(data);
 
-        setAllBranch(data.data);
+        setAllCurrency(data.data);
       } catch (error) {
-        messageApi.error("Unable To Fetch Branch Data");
+        messageApi.error("Unable To Fetch Currency Data");
       }
     };
     fetcher();
@@ -33,14 +33,14 @@ const Branch = () => {
   // Columns for Table
   const columns = [
     {
-      title: "Branch Name",
-      dataIndex: "branchName",
-      key: "branchName",
+      title: "Currency Name",
+      dataIndex: "currencyName",
+      key: "currencyName",
     },
     {
-      title: "Branch Address",
-      dataIndex: "branchAddress",
-      key: "branchAddress",
+      title: "Currency Description",
+      dataIndex: "currencyDesc",
+      key: "currencyDesc",
     },
     {
       title: "Action",
@@ -52,7 +52,7 @@ const Branch = () => {
             title="Are you sure !"
             description="Onec you update, you can re-update it!"
             onCancel={() => messageApi.info("No changes occur !")}
-            onConfirm={() => onEditBranch(obj)}
+            onConfirm={() => onEditCurrency(obj)}
           >
             <Button
               type="text"
@@ -64,7 +64,7 @@ const Branch = () => {
             title="Are you sure ?"
             description="Once you delete, you can not re-store it!"
             onCancel={() => messageApi.info("Your data is safe!")}
-            onConfirm={() => onDeleteBranch(obj._id)}
+            onConfirm={() => onDeleteCurrency(obj._id)}
           >
             <Button
               type="text"
@@ -76,40 +76,40 @@ const Branch = () => {
       ),
     },
   ];
-  // Create Branch
+  // Create Currency
   const onFinish = async (values) => {
     try {
       setLoading(true);
       const finalObj = trimData(values);
       console.log(finalObj);
 
-      finalObj.key = finalObj.branchName;
+      finalObj.key = finalObj.currencyName;
       const httpReq = http();
-      const { data } = await httpReq.post(`/api/branch`, finalObj);
+      const { data } = await httpReq.post(`/api/currency`, finalObj);
 
-      messageApi.success("Branch Created Successfully !");
-      branchForm.resetFields();
+      messageApi.success("Currency Created Successfully !");
+      currencyForm.resetFields();
       setNo(no + 1);
     } catch (error) {
       if (error?.response?.data?.error?.code === 11000) {
-        branchForm.setFields([
+        currencyForm.setFields([
           {
-            name: "branchName",
-            errors: ["Branch Already Exists!"],
+            name: "currencyName",
+            errors: ["Currency Already Exists!"],
           },
         ]);
       } else {
-        messageApi.error("Unable to create Branch!");
+        messageApi.error("Unable to create Currency!");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Update Branch
-  const onEditBranch = async (obj) => {
+  // Update Currency
+  const onEditCurrency = async (obj) => {
     setEdit(obj);
-    branchForm.setFieldsValue(obj);
+    currencyForm.setFieldsValue(obj);
   };
 
   const onUpdate = async (values) => {
@@ -117,27 +117,27 @@ const Branch = () => {
       setLoading(true);
       let finalObj = trimData(values);
       const httpReq = http();
-      await httpReq.put(`/api/branch/${edit._id}`, finalObj);
-      messageApi.success("Branch Update Successfully !");
+      await httpReq.put(`/api/currency/${edit._id}`, finalObj);
+      messageApi.success("Currency Update Successfully !");
       setNo(no + 1);
       setEdit(null);
-      branchForm.resetFields();
+      currencyForm.resetFields();
     } catch (error) {
-      messageApi.error("Unable to update Branch!");
+      messageApi.error("Unable to update Currency!");
     } finally {
       setLoading(false);
     }
   };
 
-  // Delete Branch
-  const onDeleteBranch = async (id) => {
+  // Delete Currency
+  const onDeleteCurrency = async (id) => {
     try {
       const httpReq = http();
-      await httpReq.delete(`/api/branch/${id}`);
-      messageApi.success("Branch Deleted Successfully !");
+      await httpReq.delete(`/api/currency/${id}`);
+      messageApi.success("Currency Deleted Successfully !");
       setNo(no + 1);
     } catch (error) {
-      messageApi.error("Unable to delete Branch!");
+      messageApi.error("Unable to delete Currency!");
     }
   };
 
@@ -145,21 +145,21 @@ const Branch = () => {
     <Adminlayout>
       {context}
       <div className="grid md:grid-cols-3 gap-3">
-        <Card title="Add New Branch">
+        <Card title="Add New Currency">
           <Form
-            form={branchForm}
+            form={currencyForm}
             onFinish={edit ? onUpdate : onFinish}
             layout="vertical"
           >
             <Item
-              name="branchName"
-              label="Branch Name"
+              name="currencyName"
+              label="Currency Name"
               rules={[{ required: true }]}
             >
               <Input />
             </Item>
-            {/* Branch Address Section */}
-            <Item label="Branch Address" name="branchAddress">
+            {/* Currency Address Section */}
+            <Item label="Currency Description" name="currencyDesc">
               <Input.TextArea />
             </Item>
             <Item>
@@ -186,13 +186,13 @@ const Branch = () => {
           </Form>
         </Card>
         <Card
-          title="Branch List"
+          title="Currency List"
           className="md:col-span-2"
           style={{ overflowX: "auto" }}
         >
           <Table
             columns={columns}
-            dataSource={allBranch}
+            dataSource={allCurrency}
             scroll={{ x: "max-content" }}
           />
         </Card>
@@ -201,4 +201,4 @@ const Branch = () => {
   );
 };
 
-export default Branch;
+export default Currency;

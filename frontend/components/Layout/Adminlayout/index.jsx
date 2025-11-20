@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import {
+  BranchesOutlined,
   DashboardOutlined,
+  DollarCircleOutlined,
   GiftOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -27,8 +29,13 @@ const Adminlayout = ({ children }) => {
     },
     {
       key: "/admin/branch",
-      icon: <GiftOutlined />,
+      icon: <BranchesOutlined />,
       label: <Link to="/admin/branch">Branch</Link>,
+    },
+    {
+      key: "/admin/currency",
+      icon: <DollarCircleOutlined />,
+      label: <Link to="/admin/currency">Currency</Link>,
     },
     {
       key: "/admin/new-employee",
