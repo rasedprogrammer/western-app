@@ -14,6 +14,7 @@ const usersSchema = new Schema(
     profile: String,
     key: String,
     address: String,
+    branch: String,
     userType: String,
     isActive: {
       type: Boolean,

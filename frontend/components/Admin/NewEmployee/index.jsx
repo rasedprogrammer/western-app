@@ -7,6 +7,7 @@ import {
   message,
   Table,
   Popconfirm,
+  Select,
 } from "antd";
 import Adminlayout from "../../Layout/Adminlayout";
 import {
@@ -15,8 +16,9 @@ import {
   EyeInvisibleOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { trimData, http } from "../../../modules/modules";
+import { trimData, http, fetchData } from "../../../modules/modules";
 import swal from "sweetalert";
+import useSWR from "swr";
 import { useEffect, useState } from "react";
 
 const { Item } = Form;
@@ -27,8 +29,27 @@ const NewEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
+  const [allBranch, setAllBranch] = useState([]);
   const [edit, setEdit] = useState(null);
   const [no, setNo] = useState(0);
+
+  // Branch Select Option
+  const { data: branches, error: bError } = useSWR("/api/branch", fetchData, {
+    refreshInterval: 1200000,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  useEffect(() => {
+    if (branches) {
+      const branchOptions = branches?.data?.map((item) => ({
+        label: item.branchName,
+        value: item.branchName,
+        key: item.key,
+      }));
+      setAllBranch(branchOptions);
+    }
+  }, [branches]);
 
   // Fetch All Employee
   useEffect(() => {
@@ -61,6 +82,25 @@ const NewEmployee = () => {
       ),
     },
     {
+      title: "User Type",
+      dataIndex: "userType",
+      key: "userType",
+      render: (text) => {
+        if (text === "admin") {
+          return <span className="capitalize text-teal-600">{text}</span>;
+        } else if (text === "employee") {
+          return <span className="capitalize text-red-700">{text}</span>;
+        } else {
+          return <span className="capitalize text-indigo-800">{text}</span>;
+        }
+      },
+    },
+    {
+      title: "Branch",
+      dataIndex: "branch",
+      key: "branch",
+    },
+    {
       title: "Fullname",
       dataIndex: "fullname",
       key: "fullname",
@@ -83,7 +123,7 @@ const NewEmployee = () => {
     {
       title: "Action",
       key: "action",
-      // fixed: "right",
+      fixed: "right",
       render: (_, obj) => (
         <div className="flex gap-1">
           <Popconfirm
@@ -137,8 +177,9 @@ const NewEmployee = () => {
       const finalObj = trimData(values);
       finalObj.profile = photo ? photo : "bankImages/dummy.png";
       finalObj.key = finalObj.email;
+      finalObj.userType = "employee";
       const httpReq = http();
-      const { data } = await httpReq.post(`/api/users`, finalObj);
+      await httpReq.post(`/api/users`, finalObj);
       const emailObj = {
         email: finalObj.email,
         password: finalObj.password,
@@ -244,6 +285,15 @@ const NewEmployee = () => {
             onFinish={edit ? onUpdate : onFinish}
             layout="vertical"
           >
+            {/* Branch Select Option */}
+            <Item
+              name="branch"
+              label="Select Branch"
+              rules={[{ required: true }]}
+            >
+              <Select placeholder="Select Branch" options={allBranch} />
+            </Item>
+            {/* Employee Form Start */}
             <Item label="Profile" name="xyz">
               <Input onChange={handleUpload} type="file" />
             </Item>
