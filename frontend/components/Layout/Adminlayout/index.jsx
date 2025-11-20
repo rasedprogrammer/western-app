@@ -26,6 +26,11 @@ const Adminlayout = ({ children }) => {
       label: <Link to="/admin/branding">Branding</Link>,
     },
     {
+      key: "/admin/branch",
+      icon: <GiftOutlined />,
+      label: <Link to="/admin/branch">Branch</Link>,
+    },
+    {
       key: "/admin/new-employee",
       icon: <UserAddOutlined />,
       label: <Link to="/admin/new-employee">New Employee</Link>,
