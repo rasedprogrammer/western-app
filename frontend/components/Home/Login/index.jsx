@@ -1,14 +1,26 @@
 import { UserAddOutlined, LockOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input } from "antd";
+import { Button, Card, Form, Input, message } from "antd";
+import { trimData, http } from "../../../modules/modules";
 const { Item } = Form;
 
 const Login = () => {
-  const onFinish = (valuse) => {
-    console.log(valuse);
+  const [messageApi, context] = message.useMessage();
+
+  const onFinish = async (valuses) => {
+    try {
+      const finalObj = trimData(valuses);
+      const httpReq = http();
+      const { data } = await httpReq.post(`/api/login`, finalObj);
+      console.log(data);
+      messageApi.success("Login Successful");
+    } catch (error) {
+      messageApi.error(error?.response?.data?.message);
+    }
   };
 
   return (
     <div className="flex">
+      {context}
       {/* Image Section */}
       <div className="w-1/2 hidden md:flex justify-center items-center">
         <img
@@ -24,7 +36,7 @@ const Login = () => {
             Bank Login
           </h1>
           <Form name="login" onFinish={onFinish} layout="vertical">
-            <Item name="username" label="Username" rules={[{ required: true }]}>
+            <Item name="email" label="Email" rules={[{ required: true }]}>
               <Input
                 prefix={<UserAddOutlined />}
                 placeholder="Enter Your Username!"
@@ -36,7 +48,7 @@ const Login = () => {
                 placeholder="Enter Your Password!"
               ></Input>
             </Item>
-            <Item name="submit" rules={[{ required: true }]}>
+            <Item name="submit">
               <Button
                 htmlType="submit"
                 type="text"

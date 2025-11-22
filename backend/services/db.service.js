@@ -16,6 +16,15 @@ const findAllRecord = async (schema) => {
     throw err;
   }
 };
+// ✅ Find One records
+const findOneRecord = async (query, schema) => {
+  try {
+    return await schema.findOne(query);
+  } catch (err) {
+    console.error("Error finding records:", err);
+    throw err;
+  }
+};
 
 // ✅ Create new record
 const createNewRecord = async (data, schema) => {
@@ -53,6 +62,7 @@ const deleteRecord = async (id, schema) => {
 // ✅ Correct export
 module.exports = {
   findAllRecord,
+  findOneRecord,
   createNewRecord,
   updateRecord,
   deleteRecord,
