@@ -15,6 +15,7 @@ import {
   EditOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { trimData, http, fetchData } from "../../../modules/modules";
 import swal from "sweetalert";
@@ -29,6 +30,7 @@ const NewEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
+  const [finalEmployee, setFinalEmployee] = useState([]);
   const [allBranch, setAllBranch] = useState([]);
   const [edit, setEdit] = useState(null);
   const [no, setNo] = useState(0);
@@ -60,12 +62,36 @@ const NewEmployee = () => {
         console.log(data);
 
         setAllEmployee(data.data);
+        setFinalEmployee(data.data);
       } catch (error) {
         messageApi.error("Unable To Fetch Employee Data");
       }
     };
     fetcher();
   }, [no]);
+
+  // Search Function
+  const onSearch = (e) => {
+    let value = e.target.value.trim().toLowerCase();
+    let filteredData =
+      finalEmployee &&
+      finalEmployee.filter((emp) => {
+        if (emp.fullname.toLowerCase().indexOf(value) != -1) {
+          return emp;
+        } else if (emp.userType.toLowerCase().indexOf(value) != -1) {
+          return emp;
+        } else if (emp.branch.toLowerCase().indexOf(value) != -1) {
+          return emp;
+        } else if (emp.email.toLowerCase().indexOf(value) != -1) {
+          return emp;
+        } else if (emp.mobile.toLowerCase().indexOf(value) != -1) {
+          return emp;
+        } else if (emp.address.toLowerCase().indexOf(value) != -1) {
+          return emp;
+        }
+      });
+    setAllEmployee(filteredData);
+  };
 
   // Columns for Table
   const columns = [
@@ -346,6 +372,15 @@ const NewEmployee = () => {
           title="Employee List"
           className="md:col-span-2"
           style={{ overflowX: "auto" }}
+          extra={
+            <div>
+              <Input
+                placeholder="Search by all"
+                prefix={<SearchOutlined />}
+                onChange={onSearch}
+              />
+            </div>
+          }
         >
           <Table
             columns={columns}

@@ -11,33 +11,13 @@ import {
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, useLocation } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
-const Adminlayout = ({ children }) => {
+const Empployeelayout = ({ children }) => {
   const { pathname } = useLocation();
   const items = [
     {
-      key: "/admin",
+      key: "/employee",
       icon: <DashboardOutlined />,
-      label: <Link to="/admin">Dashboard</Link>,
-    },
-    {
-      key: "/admin/branding",
-      icon: <GiftOutlined />,
-      label: <Link to="/admin/branding">Branding</Link>,
-    },
-    {
-      key: "/admin/branch",
-      icon: <BranchesOutlined />,
-      label: <Link to="/admin/branch">Branch</Link>,
-    },
-    {
-      key: "/admin/currency",
-      icon: <DollarCircleOutlined />,
-      label: <Link to="/admin/currency">Currency</Link>,
-    },
-    {
-      key: "/admin/new-employee",
-      icon: <UserAddOutlined />,
-      label: <Link to="/admin/new-employee">New Employee</Link>,
+      label: <Link to="/employee">Dashboard</Link>,
     },
   ];
 
@@ -84,4 +64,4 @@ const Adminlayout = ({ children }) => {
     </Layout>
   );
 };
-export default Adminlayout;
+export default Empployeelayout;
