@@ -1,9 +1,17 @@
 import { UserAddOutlined, LockOutlined } from "@ant-design/icons";
 import { Button, Card, Form, Input, message } from "antd";
 import { trimData, http } from "../../../modules/modules";
+import { useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+
 const { Item } = Form;
 
 const Login = () => {
+  const cookies = new Cookies();
+  const expires = new Date();
+  expires.setDate(expires.getDate() + 3);
+
+  const navigate = useNavigate();
   const [messageApi, context] = message.useMessage();
 
   const onFinish = async (valuses) => {
@@ -11,8 +19,30 @@ const Login = () => {
       const finalObj = trimData(valuses);
       const httpReq = http();
       const { data } = await httpReq.post(`/api/login`, finalObj);
-      console.log(data);
-      messageApi.success("Login Successful");
+      if (data?.isLoged && data?.userType === "admin") {
+        const { token } = data;
+        cookies.set("authToken", token, {
+          path: "/",
+          expires: expires,
+        });
+        navigate("/admin");
+      } else if (data?.isLoged && data?.userType === "employee") {
+        const { token } = data;
+        cookies.set("authToken", token, {
+          path: "/",
+          expires: expires,
+        });
+        navigate("/employee");
+      } else if (data?.isLoged && data?.userType === "customer") {
+        const { token } = data;
+        cookies.set("authToken", token, {
+          path: "/",
+          expires: expires,
+        });
+        navigate("/customer");
+      } else {
+        messageApi.error("You are not authorized to access this portal.");
+      }
     } catch (error) {
       messageApi.error(error?.response?.data?.message);
     }
@@ -43,15 +73,15 @@ const Login = () => {
               ></Input>
             </Item>
             <Item name="password" label="Password" rules={[{ required: true }]}>
-              <Input
+              <Input.Password
                 prefix={<LockOutlined />}
                 placeholder="Enter Your Password!"
-              ></Input>
+              ></Input.Password>
             </Item>
             <Item name="submit">
               <Button
-                htmlType="submit"
                 type="text"
+                htmlType="submit"
                 block
                 className="!bg-blue-500 !font-bold !text-white"
               >

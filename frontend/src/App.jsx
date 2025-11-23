@@ -7,6 +7,7 @@ import Branding from "../components/Admin/Branding";
 import Branch from "../components/Admin/Branch";
 import Currency from "../components/Admin/Currency";
 import EmployeeDashboard from "../components/Employee";
+import Guard from "../components/Guard";
 
 const App = () => {
   return (
@@ -14,17 +15,25 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Homepage />} />
         {/* Stard Admin Related Routes */}
-        <Route path="/admin/*">
+        <Route
+          path="/admin/"
+          element={<Guard endpoint={"/api/verify-token"} role="admin" />}
+        >
           <Route index element={<Dashboard />} />
           <Route path="branding" element={<Branding />} />
           <Route path="branch" element={<Branch />} />
           <Route path="currency" element={<Currency />} />
           <Route path="new-employee" element={<NewEmployee />} />
+          <Route path="*" element={<PageNotFound />} />
         </Route>
         {/* End Admin Related Routes */}
         {/* Stard Employee Related Routes */}
-        <Route path="/employee/*">
+        <Route
+          path="/employee/"
+          element={<Guard endpoint={"/api/verify-token"} role="employee" />}
+        >
           <Route index element={<EmployeeDashboard />} />
+          <Route path="*" element={<PageNotFound />} />
         </Route>
         {/* End Employee Related Routes */}
 

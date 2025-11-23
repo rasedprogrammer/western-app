@@ -26,7 +26,7 @@ const loginFunc = async (req, res, schema) => {
           return res.status(200).json({
             success: true,
             message: "Login Successful",
-            isLoggedIn: true,
+            isLoged: true,
             token,
             userType: dbRes._doc.userType,
           });
@@ -34,7 +34,7 @@ const loginFunc = async (req, res, schema) => {
           return res.status(401).json({
             success: false,
             message: "You are not active member. Please contact admin.",
-            isLoggedIn: false,
+            isLoged: false,
           });
         }
       }
@@ -42,7 +42,7 @@ const loginFunc = async (req, res, schema) => {
       return res.status(401).json({
         success: false,
         message: "Invalid Credentials",
-        isLoggedIn: false,
+        isLoged: false,
       });
     }
   } catch (error) {
