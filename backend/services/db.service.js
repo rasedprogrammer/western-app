@@ -16,7 +16,7 @@ const findAllRecord = async (schema) => {
     throw err;
   }
 };
-// ✅ Find One records
+// ✅ Find One records in given schema
 const findOneRecord = async (query, schema) => {
   try {
     return await schema.findOne(query);
@@ -26,7 +26,7 @@ const findOneRecord = async (query, schema) => {
   }
 };
 
-// ✅ Create new record
+// ✅ Create new record for given schema
 const createNewRecord = async (data, schema) => {
   try {
     const dbRes = await schema.create(data);
@@ -37,9 +37,10 @@ const createNewRecord = async (data, schema) => {
   }
 };
 
-// ✅ Update record
+// ✅ Update record by ID
 const updateRecord = async (id, data, schema) => {
   try {
+    // start
     const dbRes = await schema.findByIdAndUpdate(id, data, { new: true });
     return dbRes;
   } catch (err) {

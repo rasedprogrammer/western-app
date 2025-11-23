@@ -28,6 +28,7 @@ const loginFunc = async (req, res, schema) => {
             message: "Login Successful",
             isLoggedIn: true,
             token,
+            userType: dbRes._doc.userType,
           });
         } else {
           return res.status(401).json({
