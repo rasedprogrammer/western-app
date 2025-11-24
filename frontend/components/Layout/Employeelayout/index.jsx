@@ -1,12 +1,8 @@
 import { useState } from "react";
 import {
-  BranchesOutlined,
   DashboardOutlined,
-  DollarCircleOutlined,
-  GiftOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserAddOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, useLocation } from "react-router-dom";
