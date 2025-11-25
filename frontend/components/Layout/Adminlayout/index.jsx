@@ -4,15 +4,27 @@ import {
   DashboardOutlined,
   DollarCircleOutlined,
   GiftOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 const { Header, Sider, Content } = Layout;
 const Adminlayout = ({ children }) => {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  const logoutFunc = () => {
+    sessionStorage.removeItem("userInfo");
+    cookies.remove("authToken");
+    navigate("/");
+  };
+
   const items = [
     {
       key: "/admin",
@@ -38,6 +50,19 @@ const Adminlayout = ({ children }) => {
       key: "/admin/new-employee",
       icon: <UserAddOutlined />,
       label: <Link to="/admin/new-employee">New Employee</Link>,
+    },
+    {
+      key: "/admin/logout",
+      icon: <LogoutOutlined />,
+      label: (
+        <Button
+          type="text"
+          className="!text-gray-300 !font-semibold"
+          onClick={logoutFunc}
+        >
+          Logout
+        </Button>
+      ),
     },
   ];
 

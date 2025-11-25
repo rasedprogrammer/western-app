@@ -1,19 +1,45 @@
 import { useState } from "react";
 import {
   DashboardOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
+
 const { Header, Sider, Content } = Layout;
 const Empployeelayout = ({ children }) => {
+  const navigate = new useNavigate();
   const { pathname } = useLocation();
+
+  const logoutFunc = () => {
+    sessionStorage.removeItem("userInfo");
+    cookies.remove("authToken");
+    navigate("/");
+  };
+
   const items = [
     {
       key: "/employee",
       icon: <DashboardOutlined />,
       label: <Link to="/employee">Dashboard</Link>,
+    },
+    {
+      key: "/admin/logout",
+      icon: <LogoutOutlined />,
+      label: (
+        <Button
+          type="text"
+          className="!text-gray-300 !font-semibold"
+          onClick={logoutFunc}
+        >
+          Logout
+        </Button>
+      ),
     },
   ];
 
