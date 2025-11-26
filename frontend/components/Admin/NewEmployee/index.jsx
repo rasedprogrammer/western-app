@@ -17,7 +17,12 @@ import {
   EyeOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { trimData, http, fetchData } from "../../../modules/modules";
+import {
+  trimData,
+  http,
+  fetchData,
+  uploadFile,
+} from "../../../modules/modules";
 import swal from "sweetalert";
 import useSWR from "swr";
 import { useEffect, useState } from "react";
@@ -289,13 +294,11 @@ const NewEmployee = () => {
 
   // Handle Upload
   const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    const folderName = "employeePhoto";
     try {
-      let file = e.target.files[0];
-      const formData = new FormData();
-      formData.append("photo", file);
-      const httpReq = http();
-      const { data } = await httpReq.post("/api/upload", formData);
-      setPhoto(data.filePath);
+      const result = await uploadFile(file, folderName);
+      setPhoto(result.filePath);
     } catch (error) {
       swal("Failed", "Unable to Upload File", "warning");
     }

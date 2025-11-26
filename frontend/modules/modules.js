@@ -27,3 +27,21 @@ export const fetchData = async (api) => {
     return null;
   }
 };
+
+// Upload File Function
+export const uploadFile = async (file, folderName) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folderName", folderName);
+
+  try {
+    const httpReq = http();
+    const response = await httpReq.post(
+      `/api/upload?folderName=${folderName}`,
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
