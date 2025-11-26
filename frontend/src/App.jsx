@@ -11,6 +11,7 @@ const Branding = lazy(() => import("../components/Admin/Branding"));
 const Branch = lazy(() => import("../components/Admin/Branch"));
 const Currency = lazy(() => import("../components/Admin/Currency"));
 const EmployeeDashboard = lazy(() => import("../components/Employee"));
+const NewAccount = lazy(() => import("../components/Employee/NewAccount"));
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
             element={<Guard endpoint={"/api/verify-token"} role="employee" />}
           >
             <Route index element={<EmployeeDashboard />} />
+            <Route path="new-account" element={<NewAccount />} />
             <Route path="*" element={<PageNotFound />} />
           </Route>
           {/* End Employee Related Routes */}
