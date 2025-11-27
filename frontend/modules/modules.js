@@ -10,12 +10,26 @@ export const http = (accessToken = null) => {
 
 // Trim Data Function
 export const trimData = (obj) => {
-  const finalData = {};
+  let finalObj = {};
   for (let key in obj) {
-    finalData[key] = obj[key]?.trim();
+    const value = obj[key];
+    if (typeof value === "string") {
+      finalObj[key] = value?.trim();
+    } else if (typeof value === "number" || typeof value === "boolean") {
+      finalObj[key] = value.toString();
+    } else {
+      finalObj[key] = value;
+    }
   }
-  return finalData;
+  return finalObj;
 };
+// export const trimData = (obj) => {
+//   const finalData = {};
+//   for (let key in obj) {
+//     finalData[key] = obj[key]?.trim();
+//   }
+//   return finalData;
+// };
 
 // Fetcher Function for SWR
 export const fetchData = async (api) => {

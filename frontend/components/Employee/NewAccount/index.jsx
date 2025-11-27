@@ -1,14 +1,55 @@
-import { Button, Card, DatePicker, Form, Modal, Select, Table } from "antd";
+import {
+  Button,
+  Card,
+  DatePicker,
+  Form,
+  message,
+  Modal,
+  Select,
+  Table,
+} from "antd";
 import Empployeelayout from "../../Layout/Employeelayout";
 import Input from "antd/es/input/Input";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import {
+  http,
+  trimData,
+  fetchData,
+  uploadFile,
+} from "../../../modules/modules";
+import useSWR, { useSWRConfig } from "swr";
+
 const { Item } = Form;
 
 const NewAccount = () => {
   // State Collection
-  const [accountForm, setAccountForm] = Form.useForm();
+  const [accountForm] = Form.useForm();
+  const [messageApi, context] = message.useMessage();
+  // State collections
   const [accountModal, setAccountModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [photo, setPhoto] = useState(null);
+  const [document, setDocuments] = useState(null);
+  const [signature, setSignature] = useState(null);
+  const [no, setNo] = useState(0);
+
+  // Get Branching Details
+  const { data: brandings, error: bError } = useSWR(
+    `/api/branding`,
+    fetchData,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      refreshInterval: 1200000,
+    }
+  );
+  // Set Account No
+  accountForm.setFieldValue(
+    "accountNo",
+    Number(brandings && brandings?.data[0]?.bankAccountNo) + 1
+  );
+
   // Columns for Table
   const columns = [
     // Branch
@@ -159,9 +200,83 @@ const NewAccount = () => {
     },
   ];
 
-  //   On Finish Handler
-  const onFinish = (values) => {
-    console.log(values);
+  // Create New Account
+  const onFinish = async (values) => {
+    try {
+      setLoading(true);
+      const finalObj = trimData(values);
+      finalObj.profile = photo ? photo : "bankImages/dummy.png";
+      finalObj.signature = signature ? signature : "bankImages/dummy.png";
+      finalObj.document = document ? document : "bankImages/dummy.png";
+      finalObj.key = finalObj.email;
+      finalObj.userType = "customer";
+      const httpReq = http();
+      console.log(finalObj);
+
+      // await httpReq.post(`/api/users`, finalObj);
+      // const emailObj = {
+      //   email: finalObj.email,
+      //   password: finalObj.password,
+      // };
+      // const res = await httpReq.post(`/api/send-email`, emailObj);
+      // console.log("Email Send Response", res);
+
+      // messageApi.success("Customer Created Successfully!");
+      // accountForm.resetFields();
+      // setPhoto(null);
+      // setSignature(null);
+      // setDocuments(null);
+      // setNo(no + 1);
+    } catch (error) {
+      if (error?.response?.data?.error?.code === 11000) {
+        accountForm.setFields([
+          {
+            name: "email",
+            errors: ["Email Already Exists!"],
+          },
+        ]);
+      } else {
+        messageApi.error("Try again later");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Photo Upload
+  const handlePhoto = async (e) => {
+    const file = e.target.files[0];
+    const folderName = "customerPhoto";
+    try {
+      const result = await uploadFile(file, folderName);
+      setPhoto(result.filePath);
+    } catch (error) {
+      messageApi.error("Customer Photo Upload Failed !");
+    }
+  };
+
+  // Handle Signature Upload
+  const handleSignature = async (e) => {
+    const file = e.target.files[0];
+    const folderName = "customerSignature";
+    try {
+      const result = await uploadFile(file, folderName);
+      setSignature(result.filePath);
+    } catch (error) {
+      messageApi.error("Signature Photo Upload Failed !");
+    }
+  };
+
+  // Handle Document Upload
+  const handleDocument = async (e) => {
+    const file = e.target.files[0];
+    const folderName = "customerDocument";
+    try {
+      const result = await uploadFile(file, folderName);
+      setDocuments(result.filePath);
+    } catch (error) {
+      messageApi.error("Document Photo Upload Failed !");
+    }
   };
 
   //   Search Handler
@@ -169,6 +284,7 @@ const NewAccount = () => {
 
   return (
     <Empployeelayout>
+      {context}
       {/* Card Section Start */}
       <div className="grid">
         <Card
@@ -215,7 +331,7 @@ const NewAccount = () => {
               name="accountNo"
               rules={[{ required: true, message: "Account No is required!" }]}
             >
-              <Input placeholder="Account No" />
+              <Input disabled placeholder="Account No" />
             </Item>
             {/* Fullname Input */}
             <Item
@@ -263,7 +379,7 @@ const NewAccount = () => {
               name="dob"
               rules={[{ required: true, message: "DOB is required!" }]}
             >
-              <DatePicker className="w-full" />
+              <Input type="date" />
             </Item>
             {/* Gender Input */}
             <Item
@@ -299,25 +415,25 @@ const NewAccount = () => {
             <Item
               label="Photo"
               name="photo"
-              rules={[{ required: true, message: "Photo is required!" }]}
+              // rules={[{ required: true, message: "Photo is required!" }]}
             >
-              <Input type="file" />
+              <Input type="file" onChange={handlePhoto} />
             </Item>
             {/* Signature Input */}
             <Item
               label="Signature"
               name="signature"
-              rules={[{ required: true, message: "Signature is required!" }]}
+              // rules={[{ required: true, message: "Signature is required!" }]}
             >
-              <Input type="file" />
+              <Input type="file" onChange={handleSignature} />
             </Item>
             {/* Document Input */}
             <Item
               label="Document"
               name="document"
-              rules={[{ required: true, message: "Document is required!" }]}
+              // rules={[{ required: true, message: "Document is required!" }]}
             >
-              <Input type="file" />
+              <Input type="file" onChange={handleDocument} />
             </Item>
           </div>
           {/* Address Input */}
