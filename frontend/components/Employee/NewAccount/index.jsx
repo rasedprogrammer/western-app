@@ -1,13 +1,4 @@
-import {
-  Button,
-  Card,
-  DatePicker,
-  Form,
-  message,
-  Modal,
-  Select,
-  Table,
-} from "antd";
+import { Button, Card, Form, message, Modal, Select, Table } from "antd";
 import Empployeelayout from "../../Layout/Employeelayout";
 import Input from "antd/es/input/Input";
 import { SearchOutlined } from "@ant-design/icons";
@@ -18,11 +9,13 @@ import {
   fetchData,
   uploadFile,
 } from "../../../modules/modules";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR, { mutate } from "swr";
 
 const { Item } = Form;
 
 const NewAccount = () => {
+  // Get User Info From SessionStorage
+  const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
   // State Collection
   const [accountForm] = Form.useForm();
   const [messageApi, context] = message.useMessage();
@@ -44,11 +37,12 @@ const NewAccount = () => {
       refreshInterval: 1200000,
     }
   );
+
+  let bankAccountNo =
+    Number(brandings && brandings?.data[0]?.bankAccountNo) + 1;
+  let brandingingId = brandings && brandings?.data[0]?._id;
   // Set Account No
-  accountForm.setFieldValue(
-    "accountNo",
-    Number(brandings && brandings?.data[0]?.bankAccountNo) + 1
-  );
+  accountForm.setFieldValue("accountNo", bankAccountNo);
 
   // Columns for Table
   const columns = [
@@ -210,23 +204,26 @@ const NewAccount = () => {
       finalObj.document = document ? document : "bankImages/dummy.png";
       finalObj.key = finalObj.email;
       finalObj.userType = "customer";
+      finalObj.branch = userInfo?.branch;
+      finalObj.createBy = userInfo?.email;
       const httpReq = http();
-      console.log(finalObj);
+      await httpReq.post(`/api/users`, finalObj);
+      const obj = {
+        email: finalObj.email,
+        password: finalObj.password,
+      };
+      await httpReq.post(`/api/customer`, finalObj);
+      await httpReq.post(`/api/send-email`, obj);
+      await httpReq.put(`/api/branding/${brandingingId}`, { bankAccountNo });
 
-      // await httpReq.post(`/api/users`, finalObj);
-      // const emailObj = {
-      //   email: finalObj.email,
-      //   password: finalObj.password,
-      // };
-      // const res = await httpReq.post(`/api/send-email`, emailObj);
-      // console.log("Email Send Response", res);
-
-      // messageApi.success("Customer Created Successfully!");
-      // accountForm.resetFields();
-      // setPhoto(null);
-      // setSignature(null);
-      // setDocuments(null);
-      // setNo(no + 1);
+      accountForm.resetFields();
+      mutate(`/api/branding`);
+      setPhoto(null);
+      setSignature(null);
+      setDocuments(null);
+      setNo(no + 1);
+      setAccountModal(false);
+      messageApi.success("Customer Created Successfully!");
     } catch (error) {
       if (error?.response?.data?.error?.code === 11000) {
         accountForm.setFields([
@@ -411,10 +408,10 @@ const NewAccount = () => {
                 ]}
               />
             </Item>
-            {/* Photo Input */}
+            {/* Profile Input */}
             <Item
-              label="Photo"
-              name="photo"
+              label="Profile"
+              name="profile"
               // rules={[{ required: true, message: "Photo is required!" }]}
             >
               <Input type="file" onChange={handlePhoto} />
@@ -447,6 +444,7 @@ const NewAccount = () => {
           {/* Submit Button */}
           <Item className="flex justify-end mb-0 mt-3 items-center">
             <Button
+              loading={loading}
               type="text"
               htmlType="submit"
               className="!text-white !bg-blue-500  !font-bold"

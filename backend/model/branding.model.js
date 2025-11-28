@@ -7,7 +7,7 @@ const brandingSchema = new Schema(
     bankName: String,
     bankTagLine: String,
     bankLogo: String,
-    bankAccountNo: String,
+    bankAccountNo: Number,
     bankTransactionId: String,
     bankAddress: String,
     fullname: String,
