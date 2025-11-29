@@ -38,7 +38,7 @@ app.use("/api/branding", brandingRouter);
 app.use("/api/branch", branchRouter);
 app.use("/api/currency", currencyRouter);
 app.use("/api/login", loginRouter);
-app.use("/api/customer", customerRouter);
+app.use("/api/customers", customerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

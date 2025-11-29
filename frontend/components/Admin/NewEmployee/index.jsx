@@ -273,6 +273,7 @@ const NewEmployee = () => {
       messageApi.success("Employee Update Successfully !");
       setNo(no + 1);
       setEdit(null);
+      setPhoto(null);
       empForm.resetFields();
     } catch (error) {
       messageApi.error("Unable to update Employee!");

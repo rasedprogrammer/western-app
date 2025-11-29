@@ -45,13 +45,14 @@ const NewAccount = () => {
   const [allCustomer, setAllCustomer] = useState(null);
   const [finalCustomer, setFinalCustomer] = useState(null);
   const [no, setNo] = useState(0);
+  const [edit, setEdit] = useState(null);
 
   // Get All Customer Data
   useEffect(() => {
     const fetcher = async () => {
       try {
         const httpReq = http();
-        const { data } = await httpReq.get("/api/customer");
+        const { data } = await httpReq.get("/api/customers");
 
         setAllCustomer(data?.data);
         setFinalCustomer(data?.data);
@@ -98,7 +99,7 @@ const NewAccount = () => {
         email: finalObj.email,
         password: finalObj.password,
       };
-      await httpReq.post(`/api/customer`, finalObj);
+      await httpReq.post(`/api/customers`, finalObj);
       await httpReq.post(`/api/send-email`, obj);
       await httpReq.put(`/api/branding/${brandingingId}`, { bankAccountNo });
 
@@ -169,12 +170,56 @@ const NewAccount = () => {
         isActive: !isActive,
       };
       const httpReq = http();
-      await httpReq.put(`/api/customer/${id}`, obj);
+      await httpReq.put(`/api/customers/${id}`, obj);
 
       messageApi.success("Record updated successfully !");
       setNo(no + 1);
     } catch (error) {
       messageApi.error("Unable to update isActive!");
+    }
+  };
+
+  // Update Customer
+  const onEditCustomer = async (obj) => {
+    setEdit(obj);
+    setAccountModal(true);
+    accountForm.setFieldsValue(obj);
+  };
+
+  const onUpdate = async (values) => {
+    try {
+      setLoading(true);
+      let finalObj = trimData(values);
+      delete finalObj.password;
+      if (photo) {
+        finalObj.profile = photo;
+      }
+      const httpReq = http();
+      await httpReq.put(`/api/customers/${edit._id}`, finalObj);
+      messageApi.success("Customer Update Successfully !");
+      setNo(no + 1);
+      setEdit(null);
+      setPhoto(null);
+      setSignature(null);
+      setEdit(null);
+      setAccountModal(false);
+      accountForm.resetFields();
+    } catch (error) {
+      messageApi.error("Unable to update Customer!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete Customer
+  const onDeleteCustomer = async (id) => {
+    try {
+      const httpReq = http();
+      await httpReq.delete(`/api/customers/${id}`);
+      messageApi.success("Customer Deleted Successfully !");
+      setNo(no + 1);
+    } catch (error) {
+      messageApi.error("Unable to delete Customer!");
     }
   };
 
@@ -196,7 +241,13 @@ const NewAccount = () => {
           return cust;
         } else if (cust?.mobile.toLowerCase().indexOf(value) != -1) {
           return cust;
-        } else if (cust?.address.toLowerCase().indexOf(value) != -1) {
+        } else if (
+          cust?.finalBalance.toString().toLowerCase().indexOf(value) != -1
+        ) {
+          return cust;
+        } else if (cust?.createBy.toLowerCase().indexOf(value) != -1) {
+          return cust;
+        } else if (cust?.fatherName.toLowerCase().indexOf(value) != -1) {
           return cust;
         }
       });
@@ -340,7 +391,7 @@ const NewAccount = () => {
             title="Are you sure !"
             description="Onec you update, you can re-update it!"
             onCancel={() => messageApi.info("No changes occur !")}
-            onConfirm={() => onEditUser(obj)}
+            onConfirm={() => onEditCustomer(obj)}
           >
             <Button
               type="text"
@@ -352,7 +403,7 @@ const NewAccount = () => {
             title="Are you sure ?"
             description="Once you delete, you can not re-store it!"
             onCancel={() => messageApi.info("Your data is safe!")}
-            onConfirm={() => onDeleteUser(obj._id)}
+            onConfirm={() => onDeleteCustomer(obj._id)}
           >
             <Button
               type="text"
@@ -406,7 +457,11 @@ const NewAccount = () => {
         footer={null}
         title={"Open New Account"}
       >
-        <Form layout="vertical" onFinish={onFinish} form={accountForm}>
+        <Form
+          layout="vertical"
+          onFinish={edit ? onUpdate : onFinish}
+          form={accountForm}
+        >
           <div className="grid md:grid-cols-3 gap-x-3">
             {/* Account No Input */}
             <Item
@@ -444,17 +499,27 @@ const NewAccount = () => {
             <Item
               label="Email"
               name="email"
-              rules={[{ required: true, message: "Email is required!" }]}
+              rules={[
+                {
+                  required: edit ? false : true,
+                  message: "Email is required!",
+                },
+              ]}
             >
-              <Input placeholder="Email" />
+              <Input disabled={edit ? true : false} placeholder="Email" />
             </Item>
             {/* Password Input */}
             <Item
               label="Password"
               name="password"
-              rules={[{ required: true, message: "Password is required!" }]}
+              rules={[
+                {
+                  required: edit ? false : true,
+                  message: "Password is required!",
+                },
+              ]}
             >
-              <Input placeholder="Password" />
+              <Input disabled={edit ? true : false} placeholder="Password" />
             </Item>
             {/* Father Name Input */}
             <Item
@@ -497,7 +562,7 @@ const NewAccount = () => {
             {/* Profile Input */}
             <Item
               label="Profile"
-              name="profile"
+              name="pic"
               // rules={[{ required: true, message: "Photo is required!" }]}
             >
               <Input type="file" onChange={handlePhoto} />
@@ -505,7 +570,7 @@ const NewAccount = () => {
             {/* Signature Input */}
             <Item
               label="Signature"
-              name="signature"
+              name="sign"
               // rules={[{ required: true, message: "Signature is required!" }]}
             >
               <Input type="file" onChange={handleSignature} />
@@ -513,7 +578,7 @@ const NewAccount = () => {
             {/* Document Input */}
             <Item
               label="Document"
-              name="document"
+              name="doc"
               // rules={[{ required: true, message: "Document is required!" }]}
             >
               <Input type="file" onChange={handleDocument} />
