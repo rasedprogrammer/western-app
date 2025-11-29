@@ -1,8 +1,25 @@
-import { Button, Card, Form, message, Modal, Select, Table } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Image,
+  Popconfirm,
+  message,
+  Modal,
+  Select,
+  Table,
+} from "antd";
 import Empployeelayout from "../../Layout/Employeelayout";
 import Input from "antd/es/input/Input";
-import { SearchOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import {
+  SearchOutlined,
+  EyeInvisibleOutlined,
+  EditOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
+import { useState, useEffect } from "react";
 import {
   http,
   trimData,
@@ -25,7 +42,25 @@ const NewAccount = () => {
   const [photo, setPhoto] = useState(null);
   const [document, setDocuments] = useState(null);
   const [signature, setSignature] = useState(null);
+  const [allCustomer, setAllCustomer] = useState(null);
+  const [finalCustomer, setFinalCustomer] = useState(null);
   const [no, setNo] = useState(0);
+
+  // Get All Customer Data
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const httpReq = http();
+        const { data } = await httpReq.get("/api/customer");
+
+        setAllCustomer(data?.data);
+        setFinalCustomer(data?.data);
+      } catch (error) {
+        messageApi.error("Unable To Fetch Customer Data");
+      }
+    };
+    fetcher();
+  }, [no]);
 
   // Get Branching Details
   const { data: brandings, error: bError } = useSWR(
@@ -38,161 +73,12 @@ const NewAccount = () => {
     }
   );
 
+  // Bank Account Get
   let bankAccountNo =
     Number(brandings && brandings?.data[0]?.bankAccountNo) + 1;
   let brandingingId = brandings && brandings?.data[0]?._id;
   // Set Account No
   accountForm.setFieldValue("accountNo", bankAccountNo);
-
-  // Columns for Table
-  const columns = [
-    // Branch
-    {
-      title: "Branch",
-      dataIndex: "branch",
-      key: "branch",
-    },
-    // User Type
-    {
-      title: "User Type",
-      dataIndex: "userType",
-      key: "userType",
-      render: (text) => {
-        if (text === "admin") {
-          return <span className="capitalize text-teal-600">{text}</span>;
-        } else if (text === "employee") {
-          return <span className="capitalize text-red-700">{text}</span>;
-        } else {
-          return <span className="capitalize text-indigo-800">{text}</span>;
-        }
-      },
-    },
-    // Account No
-    {
-      title: "Account No",
-      dataIndex: "accountNo",
-      key: "accountNo",
-    },
-    // Fullname
-    {
-      title: "Fullname",
-      dataIndex: "fullname",
-      key: "fullname",
-    },
-    // DOB
-    {
-      title: "DOB",
-      dataIndex: "dob",
-      key: "dob",
-    },
-    // Email
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    // Mobile
-    {
-      title: "Mobile",
-      dataIndex: "mobile",
-      key: "mobile",
-    },
-    // Address
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    // Photo
-    {
-      title: "Photo",
-      key: "photo",
-      render: (src, obj) => (
-        <Image
-          src={`${import.meta.env.VITE_BASEURL}/${obj.profile}`}
-          className="rounded-full"
-          width={40}
-          height={40}
-        />
-      ),
-    },
-    // Signature
-    {
-      title: "Signature",
-      key: "signature",
-      render: (src, obj) => (
-        <Image
-          src={`${import.meta.env.VITE_BASEURL}/${obj.profile}`}
-          className="rounded-full"
-          width={40}
-          height={40}
-        />
-      ),
-    },
-    // Document
-    {
-      title: "Document",
-      key: "document",
-      render: (src, obj) => (
-        <Image
-          src={`${import.meta.env.VITE_BASEURL}/${obj.profile}`}
-          className="rounded-full"
-          width={40}
-          height={40}
-        />
-      ),
-    },
-    // Action
-    {
-      title: "Action",
-      key: "action",
-      fixed: "right",
-      render: (_, obj) => (
-        <div className="flex gap-1">
-          <Popconfirm
-            title="Are you sure?"
-            description="Once you update, you can also re-update it!"
-            onCancel={() => messageApi.info("No changes occur !")}
-            onConfirm={() => updateIsActive(obj._id, obj.isActive)}
-          >
-            <Button
-              type="text"
-              className={`${
-                obj.isActive
-                  ? "!text-indigo-500 !bg-indigo-100"
-                  : "!text-pink-500 !bg-pink-100"
-              }`}
-              icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-            />
-          </Popconfirm>
-          <Popconfirm
-            title="Are you sure !"
-            description="Onec you update, you can re-update it!"
-            onCancel={() => messageApi.info("No changes occur !")}
-            onConfirm={() => onEditUser(obj)}
-          >
-            <Button
-              type="text"
-              className="!text-green-500 !bg-green-100"
-              icon={<EditOutlined />}
-            />
-          </Popconfirm>
-          <Popconfirm
-            title="Are you sure ?"
-            description="Once you delete, you can not re-store it!"
-            onCancel={() => messageApi.info("Your data is safe!")}
-            onConfirm={() => onDeleteUser(obj._id)}
-          >
-            <Button
-              type="text"
-              className="!text-rose-500 !bg-rose-100"
-              icon={<DeleteOutlined />}
-            />
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
 
   // Create New Account
   const onFinish = async (values) => {
@@ -276,8 +162,208 @@ const NewAccount = () => {
     }
   };
 
-  //   Search Handler
-  const onSearch = () => {};
+  // Update is Active
+  const updateIsActive = async (id, isActive) => {
+    try {
+      const obj = {
+        isActive: !isActive,
+      };
+      const httpReq = http();
+      await httpReq.put(`/api/customer/${id}`, obj);
+
+      messageApi.success("Record updated successfully !");
+      setNo(no + 1);
+    } catch (error) {
+      messageApi.error("Unable to update isActive!");
+    }
+  };
+
+  // Search Function
+  const onSearch = (e) => {
+    let value = e.target.value.trim().toLowerCase();
+    let filteredData =
+      finalCustomer &&
+      finalCustomer.filter((cust) => {
+        if (cust?.fullname.toLowerCase().indexOf(value) != -1) {
+          return cust;
+        } else if (
+          cust?.accountNo.toString().toLowerCase().indexOf(value) != -1
+        ) {
+          return cust;
+        } else if (cust?.dob.toLowerCase().indexOf(value) != -1) {
+          return cust;
+        } else if (cust?.email.toLowerCase().indexOf(value) != -1) {
+          return cust;
+        } else if (cust?.mobile.toLowerCase().indexOf(value) != -1) {
+          return cust;
+        } else if (cust?.address.toLowerCase().indexOf(value) != -1) {
+          return cust;
+        }
+      });
+    setAllCustomer(filteredData);
+  };
+
+  // Columns for Table
+  const columns = [
+    // Photo
+    {
+      title: "Photo",
+      key: "photo",
+      render: (src, obj) => (
+        <Image
+          src={`${import.meta.env.VITE_BASEURL}/${obj?.profile}`}
+          className="rounded-full"
+          width={40}
+          height={40}
+        />
+      ),
+    },
+    // Signature
+    {
+      title: "Signature",
+      key: "signature",
+      render: (src, obj) => (
+        <Image
+          src={`${import.meta.env.VITE_BASEURL}/${obj?.signature}`}
+          className="rounded-full"
+          width={40}
+          height={40}
+        />
+      ),
+    },
+    // Document
+    {
+      title: "Document",
+      key: "document",
+      render: (src, obj) => (
+        <Button
+          type="text"
+          shape="circle"
+          className="!bg-blue-100 !text-blue-500"
+          icon={<DownloadOutlined />}
+        />
+      ),
+    },
+    // Branch
+    {
+      title: "Branch",
+      dataIndex: "branch",
+      key: "branch",
+    },
+    // User Type
+    {
+      title: "User Type",
+      dataIndex: "userType",
+      key: "userType",
+      render: (text) => {
+        if (text === "admin") {
+          return <span className="capitalize text-teal-600">{text}</span>;
+        } else if (text === "employee") {
+          return <span className="capitalize text-red-700">{text}</span>;
+        } else {
+          return <span className="capitalize text-indigo-800">{text}</span>;
+        }
+      },
+    },
+    // Account No
+    {
+      title: "Account No",
+      dataIndex: "accountNo",
+      key: "accountNo",
+    },
+    // Balance
+    {
+      title: "Balance",
+      dataIndex: "finalBalance",
+      key: "finalBalance",
+    },
+    // Fullname
+    {
+      title: "Fullname",
+      dataIndex: "fullname",
+      key: "fullname",
+    },
+    // DOB
+    {
+      title: "DOB",
+      dataIndex: "dob",
+      key: "dob",
+    },
+    // Email
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    // Mobile
+    {
+      title: "Mobile",
+      dataIndex: "mobile",
+      key: "mobile",
+    },
+    // Address
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+    },
+    // Create By
+    {
+      title: "Create By",
+      dataIndex: "createBy",
+      key: "createBy",
+    },
+    // Action
+    {
+      title: "Action",
+      key: "action",
+      fixed: "right",
+      render: (_, obj) => (
+        <div className="flex gap-1">
+          <Popconfirm
+            title="Are you sure?"
+            description="Once you update, you can also re-update it!"
+            onCancel={() => messageApi.info("No changes occur !")}
+            onConfirm={() => updateIsActive(obj._id, obj.isActive)}
+          >
+            <Button
+              type="text"
+              className={`${
+                obj.isActive
+                  ? "!text-indigo-500 !bg-indigo-100"
+                  : "!text-pink-500 !bg-pink-100"
+              }`}
+              icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+            />
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure !"
+            description="Onec you update, you can re-update it!"
+            onCancel={() => messageApi.info("No changes occur !")}
+            onConfirm={() => onEditUser(obj)}
+          >
+            <Button
+              type="text"
+              className="!text-green-500 !bg-green-100"
+              icon={<EditOutlined />}
+            />
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure ?"
+            description="Once you delete, you can not re-store it!"
+            onCancel={() => messageApi.info("Your data is safe!")}
+            onConfirm={() => onDeleteUser(obj._id)}
+          >
+            <Button
+              type="text"
+              className="!text-rose-500 !bg-rose-100"
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <Empployeelayout>
@@ -306,7 +392,7 @@ const NewAccount = () => {
         >
           <Table
             columns={columns}
-            dataSource={[]}
+            dataSource={allCustomer}
             scroll={{ x: "max-content" }}
           />
         </Card>

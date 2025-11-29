@@ -264,6 +264,7 @@ const NewEmployee = () => {
     try {
       setLoading(true);
       let finalObj = trimData(values);
+      delete finalObj.password;
       if (photo) {
         finalObj.profile = photo;
       }
@@ -339,7 +340,7 @@ const NewEmployee = () => {
               </Item>
             </div>
             <Item name="email" label="Email" rules={[{ required: true }]}>
-              <Input />
+              <Input disabled={edit ? true : false} />
             </Item>
             <Item name="password" label="Password" rules={[{ required: true }]}>
               <Input disabled={edit ? true : false} />
