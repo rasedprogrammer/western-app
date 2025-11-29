@@ -8,6 +8,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserAddOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -48,8 +49,13 @@ const Adminlayout = ({ children }) => {
     },
     {
       key: "/admin/new-employee",
-      icon: <UserAddOutlined />,
+      icon: <UsergroupAddOutlined />,
       label: <Link to="/admin/new-employee">New Employee</Link>,
+    },
+    {
+      key: "/admin/new-account",
+      icon: <UserAddOutlined />,
+      label: <Link to="/admin/new-account">New Account</Link>,
     },
     {
       key: "/admin/logout",

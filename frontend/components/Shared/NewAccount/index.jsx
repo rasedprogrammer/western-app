@@ -9,7 +9,6 @@ import {
   Select,
   Table,
 } from "antd";
-import Empployeelayout from "../../Layout/Employeelayout";
 import Input from "antd/es/input/Input";
 import {
   SearchOutlined,
@@ -54,8 +53,12 @@ const NewAccount = () => {
         const httpReq = http();
         const { data } = await httpReq.get("/api/customers");
 
-        setAllCustomer(data?.data);
-        setFinalCustomer(data?.data);
+        setAllCustomer(
+          data?.data.filter((item) => item.branch == userInfo.branch)
+        );
+        setFinalCustomer(
+          data?.data.filter((item) => item.branch == userInfo.branch)
+        );
       } catch (error) {
         messageApi.error("Unable To Fetch Customer Data");
       }
@@ -94,7 +97,8 @@ const NewAccount = () => {
       finalObj.branch = userInfo?.branch;
       finalObj.createBy = userInfo?.email;
       const httpReq = http();
-      await httpReq.post(`/api/users`, finalObj);
+      const { data } = await httpReq.post(`/api/users`, finalObj);
+      finalObj.customerLoginId = data?.data?._id;
       const obj = {
         email: finalObj.email,
         password: finalObj.password,
@@ -164,14 +168,16 @@ const NewAccount = () => {
   };
 
   // Update is Active
-  const updateIsActive = async (id, isActive) => {
+  const updateIsActive = async (id, isActive, loginId) => {
     try {
       const obj = {
         isActive: !isActive,
       };
       const httpReq = http();
-      await httpReq.put(`/api/customers/${id}`, obj);
+      const { data } = await httpReq.put(`/api/users/${loginId}`, obj);
+      console.log(data, obj);
 
+      await httpReq.put(`/api/customers/${id}`, obj);
       messageApi.success("Record updated successfully !");
       setNo(no + 1);
     } catch (error) {
@@ -191,6 +197,8 @@ const NewAccount = () => {
       setLoading(true);
       let finalObj = trimData(values);
       delete finalObj.password;
+      delete finalObj.email;
+      delete finalObj.accountNo;
       if (photo) {
         finalObj.profile = photo;
       }
@@ -212,9 +220,10 @@ const NewAccount = () => {
   };
 
   // Delete Customer
-  const onDeleteCustomer = async (id) => {
+  const onDeleteCustomer = async (id, loginId) => {
     try {
       const httpReq = http();
+      await httpReq.delete(`/api/users/${loginId}`);
       await httpReq.delete(`/api/customers/${id}`);
       messageApi.success("Customer Deleted Successfully !");
       setNo(no + 1);
@@ -252,6 +261,12 @@ const NewAccount = () => {
         }
       });
     setAllCustomer(filteredData);
+  };
+
+  const onCloseModal = () => {
+    setAccountModal(false);
+    setEdit(null);
+    accountForm.resetFields();
   };
 
   // Columns for Table
@@ -375,7 +390,9 @@ const NewAccount = () => {
             title="Are you sure?"
             description="Once you update, you can also re-update it!"
             onCancel={() => messageApi.info("No changes occur !")}
-            onConfirm={() => updateIsActive(obj._id, obj.isActive)}
+            onConfirm={() =>
+              updateIsActive(obj._id, obj.isActive, obj.customerLoginId)
+            }
           >
             <Button
               type="text"
@@ -403,7 +420,7 @@ const NewAccount = () => {
             title="Are you sure ?"
             description="Once you delete, you can not re-store it!"
             onCancel={() => messageApi.info("Your data is safe!")}
-            onConfirm={() => onDeleteCustomer(obj._id)}
+            onConfirm={() => onDeleteCustomer(obj._id, obj.customerLoginId)}
           >
             <Button
               type="text"
@@ -417,7 +434,7 @@ const NewAccount = () => {
   ];
 
   return (
-    <Empployeelayout>
+    <div>
       {context}
       {/* Card Section Start */}
       <div className="grid">
@@ -452,7 +469,7 @@ const NewAccount = () => {
       {/* Model Section Start */}
       <Modal
         open={accountModal}
-        onCancel={() => setAccountModal(false)}
+        onCancel={onCloseModal}
         width={820}
         footer={null}
         title={"Open New Account"}
@@ -462,15 +479,45 @@ const NewAccount = () => {
           onFinish={edit ? onUpdate : onFinish}
           form={accountForm}
         >
+          {!edit && (
+            <div className="grid md:grid-cols-3 gap-x-3">
+              {/* Account No Input */}
+              <Item
+                label="Account No"
+                name="accountNo"
+                rules={[{ required: true, message: "Account No is required!" }]}
+              >
+                <Input disabled placeholder="Account No" />
+              </Item>
+              {/* Email Input */}
+              <Item
+                label="Email"
+                name="email"
+                rules={[
+                  {
+                    required: edit ? false : true,
+                    message: "Email is required!",
+                  },
+                ]}
+              >
+                <Input disabled={edit ? true : false} placeholder="Email" />
+              </Item>
+              {/* Password Input */}
+              <Item
+                label="Password"
+                name="password"
+                rules={[
+                  {
+                    required: edit ? false : true,
+                    message: "Password is required!",
+                  },
+                ]}
+              >
+                <Input disabled={edit ? true : false} placeholder="Password" />
+              </Item>
+            </div>
+          )}
           <div className="grid md:grid-cols-3 gap-x-3">
-            {/* Account No Input */}
-            <Item
-              label="Account No"
-              name="accountNo"
-              rules={[{ required: true, message: "Account No is required!" }]}
-            >
-              <Input disabled placeholder="Account No" />
-            </Item>
             {/* Fullname Input */}
             <Item
               label="Fullname"
@@ -495,32 +542,7 @@ const NewAccount = () => {
             >
               <Input placeholder="Father Name" />
             </Item>
-            {/* Email Input */}
-            <Item
-              label="Email"
-              name="email"
-              rules={[
-                {
-                  required: edit ? false : true,
-                  message: "Email is required!",
-                },
-              ]}
-            >
-              <Input disabled={edit ? true : false} placeholder="Email" />
-            </Item>
-            {/* Password Input */}
-            <Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: edit ? false : true,
-                  message: "Password is required!",
-                },
-              ]}
-            >
-              <Input disabled={edit ? true : false} placeholder="Password" />
-            </Item>
+
             {/* Father Name Input */}
             <Item
               label="DOB"
@@ -606,7 +628,7 @@ const NewAccount = () => {
         </Form>
       </Modal>
       {/* Model Section End */}
-    </Empployeelayout>
+    </div>
   );
 };
 
