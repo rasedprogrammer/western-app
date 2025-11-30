@@ -1,12 +1,12 @@
-import Empployeelayout from "../Layout/Employeelayout";
+import Employeelayout from "../Layout/Employeelayout";
 
 const EmployeeDashboard = () => {
   return (
-    <Empployeelayout>
+    <Employeelayout>
       <h1 className="text-red-500 text-5xl font-bold">
         Welcome to Employee Dashboard
       </h1>
-    </Empployeelayout>
+    </Employeelayout>
   );
 };
 

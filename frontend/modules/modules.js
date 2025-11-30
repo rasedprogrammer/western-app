@@ -23,13 +23,6 @@ export const trimData = (obj) => {
   }
   return finalObj;
 };
-// export const trimData = (obj) => {
-//   const finalData = {};
-//   for (let key in obj) {
-//     finalData[key] = obj[key]?.trim();
-//   }
-//   return finalData;
-// };
 
 // Fetcher Function for SWR
 export const fetchData = async (api) => {

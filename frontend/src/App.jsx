@@ -14,6 +14,9 @@ const EmployeeDashboard = lazy(() => import("../components/Employee"));
 const EmpNewAccount = lazy(() =>
   import("../components/Employee/EmpNewAccount")
 );
+const EmpTransaction = lazy(() =>
+  import("../components/Employee/EmpTransaction")
+);
 const AdminNewAccount = lazy(() =>
   import("../components/Admin/AdminNewAccount")
 );
@@ -45,6 +48,7 @@ const App = () => {
           >
             <Route index element={<EmployeeDashboard />} />
             <Route path="new-account" element={<EmpNewAccount />} />
+            <Route path="new-transaction" element={<EmpTransaction />} />
             <Route path="*" element={<PageNotFound />} />
           </Route>
           {/* End Employee Related Routes */}

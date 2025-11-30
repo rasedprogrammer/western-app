@@ -1,11 +1,11 @@
-import Empployeelayout from "../../Layout/Employeelayout";
+import Employeelayout from "../../Layout/Employeelayout";
 import NewAccount from "../../Shared/NewAccount";
 
 const EmpNewAccount = () => {
   return (
-    <Empployeelayout>
+    <Employeelayout>
       <NewAccount />
-    </Empployeelayout>
+    </Employeelayout>
   );
 };
 

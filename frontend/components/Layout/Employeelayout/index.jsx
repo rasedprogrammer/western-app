@@ -5,6 +5,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  TransactionOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -13,7 +14,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 const { Header, Sider, Content } = Layout;
-const Empployeelayout = ({ children }) => {
+const Employeelayout = ({ children }) => {
   const navigate = new useNavigate();
   const { pathname } = useLocation();
 
@@ -33,6 +34,11 @@ const Empployeelayout = ({ children }) => {
       key: "/employee/new-account",
       icon: <AccountBookOutlined />,
       label: <Link to="/employee/new-account">New Account</Link>,
+    },
+    {
+      key: "/employee/new-transaction",
+      icon: <TransactionOutlined />,
+      label: <Link to="/employee/new-transaction">New Transaction</Link>,
     },
     {
       key: "/admin/logout",
@@ -92,4 +98,4 @@ const Empployeelayout = ({ children }) => {
     </Layout>
   );
 };
-export default Empployeelayout;
+export default Employeelayout;
