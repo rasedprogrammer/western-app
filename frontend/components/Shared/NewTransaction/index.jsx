@@ -1,7 +1,7 @@
 import { Card, Input, Image, Form, Select, Button, message, Empty } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { http } from "../../../modules/modules";
+import { http, trimData } from "../../../modules/modules";
 
 const NewTransaction = () => {
   //   Get User Info From Session Storage
@@ -16,8 +16,37 @@ const NewTransaction = () => {
   const [accountDetails, setAccountDetails] = useState(null);
 
   //   On Finish Function
-  const onFinish = (values) => {
-    console.log(values);
+  const onFinish = async (values) => {
+    try {
+      const finalObj = trimData(values);
+      let balance = 0;
+      if (finalObj.transactionType === "cr") {
+        balance =
+          Number(accountDetails.finalBalance) +
+          Number(finalObj.transactionAmount);
+      } else if (finalObj.transactionType === "dr") {
+        balance =
+          Number(accountDetails.finalBalance) -
+          Number(finalObj.transactionAmount);
+      }
+      finalObj.currentBalance = accountDetails.finalBalance;
+      finalObj.customerId = accountDetails._id;
+      finalObj.accountNo = accountDetails.accountNo;
+
+      const httpReq = http();
+      const { data } = await httpReq.post(`/api/transaction`, finalObj);
+      const { customerBalance } = await httpReq.put(
+        `/api/customers/${accountDetails._id}`,
+        {
+          finalBalance: balance,
+        }
+      );
+      messageApi.success("Transaction Create Successfully!!");
+      transactionForm.resetFields();
+      setAccountDetails(null);
+    } catch (error) {
+      messageApi.error("Unable to process transaction!!!");
+    }
   };
 
   //   Search Account Function
