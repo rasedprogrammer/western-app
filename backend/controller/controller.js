@@ -63,7 +63,6 @@ const updateData = async (req, res, schema) => {
   }
 };
 
-
 const deleteData = async (req, res, schema) => {
   try {
     const { id } = req.params;
@@ -82,9 +81,30 @@ const deleteData = async (req, res, schema) => {
   }
 };
 
+const findByAccountNo = async (req, res, schema) => {
+  try {
+    const query = req.body;
+    console.log(query);
+
+    const dbRes = await dbService.findOneRecord(query, schema);
+    console.log(dbRes);
+
+    return res.status(200).json({
+      message: "Record Found!!",
+      data: dbRes,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error !",
+      success: false,
+    });
+  }
+};
+
 module.exports = {
   createData,
   getData,
   updateData,
-  deleteData
+  deleteData,
+  findByAccountNo,
 };

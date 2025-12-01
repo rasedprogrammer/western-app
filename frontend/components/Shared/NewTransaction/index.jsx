@@ -1,6 +1,8 @@
 import { Card, Input, Image, Form, Select, Button, message, Empty } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { http } from "../../../modules/modules";
+
 const NewTransaction = () => {
   //   Get User Info From Session Storage
   const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
@@ -20,7 +22,26 @@ const NewTransaction = () => {
 
   //   Search Account Function
   const searchByAccountNo = async () => {
-    alert(accountNo);
+    try {
+      const obj = {
+        accountNo: Number(accountNo),
+        branch: userInfo?.branch,
+      };
+      console.log(obj);
+
+      const httpReq = http();
+      const { data } = await httpReq.post(`/api/find-by-account`, obj);
+      console.log(data);
+
+      if (data?.data) {
+        setAccountDetails(data?.data);
+      } else {
+        messageApi.warning("There is no record of this account no!");
+        setAccountDetails(null);
+      }
+    } catch (error) {
+      messageApi.error("Unable to find account details!");
+    }
   };
 
   return (
@@ -48,12 +69,16 @@ const NewTransaction = () => {
             {/* 1st Div */}
             <div className="flex items-center justify-start gap-2">
               <Image
-                src="https://cdn-icons-png.flaticon.com/512/219/219983.png"
+                src={`${import.meta.env.VITE_BASEURL}/${
+                  accountDetails?.profile
+                }`}
                 width={120}
                 className="rounded-full"
               />
               <Image
-                src="https://cdn.iconscout.com/icon/free/png-256/free-avatar-icon-svg-download-png-456332.png"
+                src={`${import.meta.env.VITE_BASEURL}/${
+                  accountDetails?.signature
+                }`}
                 width={120}
                 className="rounded-full"
               />
@@ -63,23 +88,27 @@ const NewTransaction = () => {
               <div className="mt-3 flex flex-col gap-3">
                 {/*  */}
                 <div className="flex items-center justify-between">
-                  <b>Name: </b> <b>Western App</b>
+                  <b>Name: </b> <b>{accountDetails?.fullname}</b>
                 </div>
                 {/*  */}
                 <div className="flex items-center justify-between">
-                  <b>Mobile: </b> <b>01822641025</b>
+                  <b>Mobile: </b> <b>{accountDetails?.mobile}</b>
                 </div>
                 {/*  */}
                 <div className="flex items-center justify-between">
-                  <b>Balance: </b> <b>600000</b>
+                  <b>Balance: </b>{" "}
+                  <b>
+                    {accountDetails?.finalBalance}
+                    {accountDetails?.currency === "bdt" ? " tk." : " $"}
+                  </b>
                 </div>
                 {/*  */}
                 <div className="flex items-center justify-between">
-                  <b>DOB: </b> <b>06-05-1997</b>
+                  <b>DOB: </b> <b>{accountDetails?.dob}</b>
                 </div>
                 {/*  */}
                 <div className="flex items-center justify-between">
-                  <b>Currency: </b> <b>BDT</b>
+                  <b>Currency: </b> <b>{accountDetails?.currency}</b>
                 </div>
               </div>
               <div></div>
