@@ -7,6 +7,10 @@ router.get("/", (req, res) => {
   controller.getData(req, res, transactionSchema);
 });
 
+router.get("/summary", (req, res) => {
+  controller.getTransactionSummary(req, res, transactionSchema);
+});
+
 router.post("/", (req, res) => {
   controller.createData(req, res, transactionSchema);
 });

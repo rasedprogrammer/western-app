@@ -32,6 +32,7 @@ const NewTransaction = () => {
       finalObj.currentBalance = accountDetails.finalBalance;
       finalObj.customerId = accountDetails._id;
       finalObj.accountNo = accountDetails.accountNo;
+      finalObj.branch = userInfo.branch;
 
       const httpReq = http();
       const { data } = await httpReq.post(`/api/transaction`, finalObj);

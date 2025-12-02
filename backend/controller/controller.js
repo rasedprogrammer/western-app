@@ -101,10 +101,83 @@ const findByAccountNo = async (req, res, schema) => {
   }
 };
 
+const getTransactionSummary = async (req, res, schema) => {
+  const { branch } = req.query;
+  try {
+    const summary = await schema.aggregate([
+      {
+        $match: { branch },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCredit: {
+            $sum: {
+              $cond: [
+                { $eq: ["$transactionType", "cr"] },
+                "$transactionAmount",
+                0,
+              ],
+            },
+          },
+          totalDebit: {
+            $sum: {
+              $cond: [
+                { $eq: ["$transactionType", "dr"] },
+                "$transactionAmount",
+                0,
+              ],
+            },
+          },
+          totalCreditTransactions: {
+            $sum: {
+              $cond: [{ $eq: ["$transactionType", "cr"] }, 1, 0],
+            },
+          },
+          totalDebitTransactions: {
+            $sum: {
+              $cond: [{ $eq: ["$transactionType", "dr"] }, 1, 0],
+            },
+          },
+          totalTransactions: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalCredit: 1,
+          totalCreditTransactions: 1,
+          totalDebit: 1,
+          totalDebitTransactions: 1,
+          totalTransactions: 1,
+          balance: {
+            $subtract: ["$totalCredit", "$totalDebit"],
+          },
+        },
+      },
+    ]);
+    if (summary.length === 0) {
+      return res.status(403).json({
+        message: "No matching transaction found!",
+        error,
+      });
+    }
+    res.status(200).json(summary[0]);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error Calculating Summary",
+      error,
+    });
+  }
+};
+
 module.exports = {
   createData,
   getData,
   updateData,
   deleteData,
   findByAccountNo,
+  getTransactionSummary,
 };

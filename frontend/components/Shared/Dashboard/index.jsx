@@ -4,6 +4,10 @@ import {
   ManOutlined,
   UploadOutlined,
   BookOutlined,
+  BarChartOutlined,
+  PlusOutlined,
+  MinusOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 const Dashboard = () => {
   return (
@@ -14,16 +18,18 @@ const Dashboard = () => {
             <div className="flex items-center flex-col gap-y-2">
               <Button
                 type="primary"
-                icon={<DownloadOutlined />}
+                icon={<BarChartOutlined />}
                 size="large"
                 shape="circle"
                 className="bg-rose-600"
               />
-              <h1 className="text-xl font-semibold text-rose-600">Downloads</h1>
+              <h1 className="text-xl font-semibold text-rose-600">
+                Transactions
+              </h1>
             </div>
             <Divider type="vertical" className="h-24" />
             <div>
-              <h1 className="text-5xl font-bold text-rose-400">45K</h1>
+              <h1 className="text-3xl font-bold text-rose-400">45 T</h1>
               <p className="text-lg mt-1 text-zinc-400">44,563</p>
             </div>
           </div>
@@ -33,16 +39,16 @@ const Dashboard = () => {
             <div className="flex items-center flex-col gap-y-2">
               <Button
                 type="primary"
-                icon={<BookOutlined />}
+                icon={<PlusOutlined />}
                 size="large"
                 shape="circle"
                 className="bg-green-600"
               />
-              <h1 className="text-xl font-semibold text-green-600">Books</h1>
+              <h1 className="text-xl font-semibold text-green-600">Credits</h1>
             </div>
             <Divider type="vertical" className="h-24" />
             <div>
-              <h1 className="text-5xl font-bold text-green-400">25K</h1>
+              <h1 className="text-3xl font-bold text-green-400">25 T</h1>
               <p className="text-lg mt-1 text-zinc-400">24,563</p>
             </div>
           </div>
@@ -52,18 +58,16 @@ const Dashboard = () => {
             <div className="flex items-center flex-col gap-y-2">
               <Button
                 type="primary"
-                icon={<ManOutlined />}
+                icon={<MinusOutlined />}
                 size="large"
                 shape="circle"
                 className="bg-orange-600"
               />
-              <h1 className="text-xl font-semibold text-orange-600">
-                Languages
-              </h1>
+              <h1 className="text-xl font-semibold text-orange-600">Debits</h1>
             </div>
             <Divider type="vertical" className="h-24" />
             <div>
-              <h1 className="text-5xl font-bold text-orange-400">18K</h1>
+              <h1 className="text-3xl font-bold text-orange-400">18 T</h1>
               <p className="text-lg mt-1 text-zinc-400">17,563</p>
             </div>
           </div>
@@ -73,16 +77,16 @@ const Dashboard = () => {
             <div className="flex items-center flex-col gap-y-2">
               <Button
                 type="primary"
-                icon={<UploadOutlined />}
+                icon={<DollarOutlined />}
                 size="large"
                 shape="circle"
                 className="bg-blue-600"
               />
-              <h1 className="text-xl font-semibold text-blue-600">Uploads</h1>
+              <h1 className="text-xl font-semibold text-blue-600">Balance</h1>
             </div>
             <Divider type="vertical" className="h-24" />
             <div>
-              <h1 className="text-5xl font-bold text-blue-400">88K</h1>
+              <h1 className="text-3xl font-bold text-blue-400">88 T</h1>
               <p className="text-lg mt-1 text-zinc-400">87,563</p>
             </div>
           </div>
