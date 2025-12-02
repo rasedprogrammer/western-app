@@ -1,24 +1,20 @@
 import { useState } from "react";
 import {
-  BranchesOutlined,
   DashboardOutlined,
-  DollarCircleOutlined,
-  GiftOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TransactionOutlined,
-  UserAddOutlined,
-  UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
+
 const { Header, Sider, Content } = Layout;
-const Adminlayout = ({ children }) => {
-  const navigate = useNavigate();
+const Customerlayout = ({ children }) => {
+  const navigate = new useNavigate();
   const { pathname } = useLocation();
 
   const logoutFunc = () => {
@@ -29,42 +25,17 @@ const Adminlayout = ({ children }) => {
 
   const items = [
     {
-      key: "/admin",
+      key: "/customer",
       icon: <DashboardOutlined />,
-      label: <Link to="/admin">Dashboard</Link>,
+      label: <Link to="/customer">Dashboard</Link>,
     },
     {
-      key: "/admin/branding",
-      icon: <GiftOutlined />,
-      label: <Link to="/admin/branding">Branding</Link>,
-    },
-    {
-      key: "/admin/branch",
-      icon: <BranchesOutlined />,
-      label: <Link to="/admin/branch">Branch</Link>,
-    },
-    {
-      key: "/admin/currency",
-      icon: <DollarCircleOutlined />,
-      label: <Link to="/admin/currency">Currency</Link>,
-    },
-    {
-      key: "/admin/new-employee",
-      icon: <UsergroupAddOutlined />,
-      label: <Link to="/admin/new-employee">New Employee</Link>,
-    },
-    {
-      key: "/admin/new-account",
-      icon: <UserAddOutlined />,
-      label: <Link to="/admin/new-account">New Account</Link>,
-    },
-    {
-      key: "/admin/new-transaction",
+      key: "/customer/transaction",
       icon: <TransactionOutlined />,
-      label: <Link to="/admin/new-transaction">New Transaction</Link>,
+      label: <Link to="/customer/transaction">Transaction</Link>,
     },
     {
-      key: "/admin/logout",
+      key: "/customer/logout",
       icon: <LogoutOutlined />,
       label: (
         <Button
@@ -121,4 +92,4 @@ const Adminlayout = ({ children }) => {
     </Layout>
   );
 };
-export default Adminlayout;
+export default Customerlayout;

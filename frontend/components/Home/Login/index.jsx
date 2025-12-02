@@ -39,7 +39,7 @@ const Login = () => {
           path: "/",
           expires: expires,
         });
-        navigate("/customers");
+        navigate("/customer");
       } else {
         messageApi.error("You are not authorized to access this portal.");
       }
