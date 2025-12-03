@@ -16,11 +16,10 @@ const AdminDashboard = () => {
       refreshInterval: 12000000,
     }
   );
-  console.log(trData);
 
   return (
     <Adminlayout>
-      <Dashboard />
+      <Dashboard data={trData && trData} />
     </Adminlayout>
   );
 };

@@ -3,6 +3,7 @@ const dbService = require("../services/db.service");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { db } = require("../model/users.model");
+const Customer = require("../model/customer.model");
 
 const loginFunc = async (req, res, schema) => {
   try {
@@ -16,10 +17,24 @@ const loginFunc = async (req, res, schema) => {
       if (isMatch) {
         if (dbRes.isActive) {
           delete dbRes._doc.password;
-          const payload = {
-            ...dbRes._doc,
-            _id: dbRes._id.toString(),
-          };
+          const db = await Customer.findOne(
+            { email },
+            { _id: 0, accountNo: 1 }
+          );
+          // Payload Define With Condition Start
+          let payload = null;
+          db
+            ? (payload = {
+                ...dbRes._doc,
+                _id: dbRes._id.toString(),
+                accountNo: db.accountNo,
+              })
+            : (payload = {
+                ...dbRes._doc,
+                _id: dbRes._id.toString(),
+              });
+          // Payload Define With Condition End
+
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: "3h",
           });
