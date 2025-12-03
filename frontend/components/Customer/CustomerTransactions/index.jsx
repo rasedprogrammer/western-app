@@ -1,11 +1,19 @@
 import Customerlayout from "../../Layout/Customerlayout";
+import NewTransaction from "../../Shared/NewTransaction";
+import TransactionTable from "../../Shared/TransactionTable";
 
 const CustomerTransactions = () => {
+  // Get UserInfo From SessionStorage
+  const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
   return (
     <Customerlayout>
-      <h1 className="text-red-500 text-5xl font-bold">
-        Welcome to Customer Transaction
-      </h1>
+      <NewTransaction />
+      <TransactionTable
+        query={{
+          accountNo: userInfo?.accountNo,
+          branch: userInfo?.branch,
+        }}
+      />
     </Customerlayout>
   );
 };
