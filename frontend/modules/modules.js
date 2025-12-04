@@ -64,3 +64,56 @@ export const formatDate = (d) => {
   mm = mm < 10 ? "0" + mm : mm;
   return `${dd}-${mm}-${yy} ${tt}`;
 };
+
+// Print Function
+export const printBankTransactions = (data) => {
+  let html = `
+    <html>
+    <head>
+      <title>Bank Transactions Details</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+      </style>
+    </head>
+    <body>
+      <h2>Bank Transactions Details</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Account No</th>
+            <th>Branch</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  data.forEach((txn) => {
+    html += `
+              <tr>
+                <td>${txn.accountNo}</td>
+                <td>${txn.branch}</td>
+                <td>${txn.transactionType}</td>
+                <td>${txn.transactionAmount}</td>
+                <td>${formatDate(txn.createdAt)}</td>
+              </tr>`;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </body>
+    </html>`;
+
+  // Write content and print
+  const newWin = window.open("", "_blank");
+  newWin.document.write(html);
+  newWin.print();
+  newWin.document.close();
+};
