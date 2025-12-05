@@ -19,6 +19,10 @@ router.post("/", (req, res) => {
   controller.createData(req, res, transactionSchema);
 });
 
+router.post("/filter", (req, res) => {
+  controller.filterData(req, res, transactionSchema);
+});
+
 router.put("/:id", (req, res) => {
   controller.updateData(req, res, transactionSchema);
 });

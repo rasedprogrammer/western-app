@@ -1,3 +1,4 @@
+const { schema } = require("../model/transaction.model");
 const dbService = require("../services/db.service");
 
 const getData = async (req, res, schema) => {
@@ -36,6 +37,41 @@ const createData = async (req, res, schema) => {
       });
     }
 
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+      error,
+    });
+  }
+};
+
+const filterData = async (req, res, schema) => {
+  try {
+    const { fromDate, toDate, accountNo, branch } = req.body;
+    const startDate = new Date(fromDate);
+    const endDate = new Date(toDate);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+
+    const query = {
+      branch,
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    };
+    if (accountNo && !accountNo !== "") {
+      query.accountNo = Number(accountNo);
+    }
+
+    const result = await schema.find(query);
+
+    res.status(200).json({
+      message: "Data Find Successfully",
+      success: true,
+      data: result,
+    });
+  } catch (error) {
     res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -209,6 +245,7 @@ const getPaginatedTransactions = async (req, res, schema) => {
 
 module.exports = {
   createData,
+  filterData,
   getData,
   updateData,
   deleteData,

@@ -12,6 +12,7 @@ const CustomerTransactions = () => {
         query={{
           accountNo: userInfo?.accountNo,
           branch: userInfo?.branch,
+          isCustomer: true,
         }}
       />
     </Customerlayout>

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, DatePicker, Table } from "antd";
+import { Button, Card, DatePicker, Form, Input, Table } from "antd";
 import {
   formatDate,
   http,
   printBankTransactions,
+  trimData,
 } from "../../../modules/modules";
 import { PrinterOutlined } from "@ant-design/icons";
+
+const { Item } = Form;
 
 const TransactionTable = ({ query = {} }) => {
   const [data, setData] = useState([]);
@@ -83,20 +86,45 @@ const TransactionTable = ({ query = {} }) => {
     },
   ];
 
+  const onFinish = async (values) => {
+    try {
+      values.branch = query.branch;
+      if (query.isCustomer) values.accountNo = query.accountNo;
+      const httpReq = http();
+      let obj = trimData(values);
+      const { data } = await httpReq.post(`/api/transaction/filter`, obj);
+      setData(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="p-4">
       <Card className="!mb-2">
         <div className="flex justify-between items-center">
-          <div className="flex gap-3">
-            <DatePicker />
-            <DatePicker />
-            <Button
-              type="text"
-              className="!text-white !bg-blue-500 !font-semibold"
-            >
-              Fetch Transactions
-            </Button>
-          </div>
+          <Form className="flex gap-3" onFinish={onFinish}>
+            <Item label="From" name="fromDate" rules={[{ required: true }]}>
+              <DatePicker />
+            </Item>
+            <Item label="To" name="toDate" rules={[{ required: true }]}>
+              <DatePicker />
+            </Item>
+            {!query.isCustomer && (
+              <Item label="Account No" name="accountNo">
+                <Input placeholder="Account No" />
+              </Item>
+            )}
+            <Item>
+              <Button
+                type="text"
+                htmlType="submit"
+                className="!text-white !bg-blue-500 !font-semibold"
+              >
+                Fetch Transactions
+              </Button>
+            </Item>
+          </Form>
           <Button
             type="text"
             className="!text-white !bg-blue-500 !font-semibold"
