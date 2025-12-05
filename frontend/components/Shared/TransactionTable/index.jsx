@@ -4,9 +4,10 @@ import {
   formatDate,
   http,
   printBankTransactions,
+  downloadTransaction,
   trimData,
 } from "../../../modules/modules";
-import { PrinterOutlined } from "@ant-design/icons";
+import { DownloadOutlined, PrinterOutlined } from "@ant-design/icons";
 
 const { Item } = Form;
 
@@ -125,13 +126,22 @@ const TransactionTable = ({ query = {} }) => {
               </Button>
             </Item>
           </Form>
-          <Button
-            type="text"
-            className="!text-white !bg-blue-500 !font-semibold"
-            shape="circle"
-            icon={<PrinterOutlined />}
-            onClick={() => printBankTransactions(data)}
-          />
+          <div className="flex gap-3">
+            <Button
+              type="text"
+              className="!text-white !bg-blue-500 !font-semibold"
+              shape="circle"
+              icon={<DownloadOutlined />}
+              onClick={() => downloadTransaction(data)}
+            />
+            <Button
+              type="text"
+              className="!text-white !bg-blue-500 !font-semibold"
+              shape="circle"
+              icon={<PrinterOutlined />}
+              onClick={() => printBankTransactions(data)}
+            />
+          </div>
         </div>
       </Card>
       <Table

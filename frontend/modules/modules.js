@@ -1,4 +1,6 @@
 import axios from "axios";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 // HTTP Request Middleware
 export const http = (accessToken = null) => {
   axios.defaults.baseURL = import.meta.env.VITE_BASEURL;
@@ -117,3 +119,76 @@ export const printBankTransactions = (data) => {
   newWin.print();
   newWin.document.close();
 };
+
+// Download Transaction Function
+export const downloadTransaction = (data = []) => {
+  if (!data.length) return alert("No transaction data found!");
+  console.log(data);
+
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  //Title
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  const title = "Western Bank Transactions Details";
+  const textWidth = doc.getTextWidth(title);
+  doc.text(title, (pageWidth - textWidth) / 2, 15);
+
+  // Prepare table data
+
+  const tableData = data.map((item) => [
+    item.accountNo,
+    item.branch,
+    item.transactionType.toUpperCase(),
+    item.transactionAmount,
+    formatDate(item.createdAt),
+  ]);
+
+  // Add transactions table
+  doc.autoTable({
+    head: [["Account No", "Branch", "Type", "Amount", "Date"]],
+    body: tableData,
+    startY: 25,
+    theme: "grid",
+    styles: { halign: "center" },
+    headStyles: { fillColor: [0, 102, 204], halign: "center" },
+    columnStyles: { 3: { halign: "right" } },
+  });
+
+  // Calculate totals
+  const totalCredit = data
+    .filter((t) => t.transactionType === "cr")
+    .reduce((sum, t) => sum + Number(t.transactionAmount), 0);
+
+  const totalDebit = data
+    .filter((t) => t.transactionType === "dr")
+    .reduce((sum, t) => sum + Number(t.transactionAmount), 0);
+
+  const balance = totalCredit - totalDebit;
+
+  const finalY = doc.lastAutoTable.finalY + 10;
+
+  // Totals table
+  doc.autoTable({
+    startY: finalY,
+    theme: "grid",
+    head: [["Summary", "Amount"]],
+    body: [
+      ["Total Credit", totalCredit.toLocaleString("en-IN")],
+      ["Total Debit", totalDebit.toLocaleString("en-IN")],
+      ["Balance", balance.toLocaleString("en-IN")],
+    ],
+    headStyles: { fillColor: [60, 179, 113], halign: "center" }, // green header
+    styles: { halign: "right", fontStyle: "bold" },
+    columnStyles: {
+      0: { halign: "left" },
+      1: { halign: "right" },
+    },
+  });
+
+  // Save PDF
+  doc.save("Bank_Transactions.pdf");
+};
+
+//npm install jspdf@2.5.1 jspdf-autotable@3.5.25
