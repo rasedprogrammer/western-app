@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../controller/controller");
 const transactionSchema = require("../model/transaction.model");
+const {
+  verifyToken,
+  isAdmin,
+  isAdminEmployee,
+  isAdminEmployeeCustomer,
+} = require("../middlewares/middleware");
 
 router.get("/", (req, res) => {
   controller.getData(req, res, transactionSchema);
@@ -11,15 +17,15 @@ router.get("/summary", (req, res) => {
   controller.getTransactionSummary(req, res, transactionSchema);
 });
 
-router.get("/pagination", (req, res) => {
+router.get("/pagination", verifyToken, isAdminEmployeeCustomer, (req, res) => {
   controller.getPaginatedTransactions(req, res, transactionSchema);
 });
 
-router.post("/", (req, res) => {
+router.post("/", verifyToken, isAdminEmployee, (req, res) => {
   controller.createData(req, res, transactionSchema);
 });
 
-router.post("/filter", (req, res) => {
+router.post("/filter", verifyToken, isAdminEmployeeCustomer, (req, res) => {
   controller.filterData(req, res, transactionSchema);
 });
 

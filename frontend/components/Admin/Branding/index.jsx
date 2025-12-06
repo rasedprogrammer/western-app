@@ -3,10 +3,13 @@ import { EditFilled } from "@ant-design/icons";
 import Adminlayout from "../../Layout/Adminlayout";
 import { http, trimData } from "../../../modules/modules";
 import { useState, useEffect } from "react";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const { Item } = Form;
 
 const Branding = () => {
+  const token = cookies.get("authToken");
   const [bankFrom] = Form.useForm();
   const [messageApi, context] = message.useMessage();
   const [loading, setLoading] = useState(false);
@@ -19,7 +22,7 @@ const Branding = () => {
   useEffect(() => {
     const fetcher = async () => {
       try {
-        const httpReq = http();
+        const httpReq = http(token);
         const { data } = await httpReq.get("/api/branding");
         console.log(data);
         bankFrom.setFieldsValue(data?.data[0]);
@@ -50,7 +53,7 @@ const Branding = () => {
       };
 
       // Api Call Section Start
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.post(`/api/branding`, finalObj);
       await httpReq.post(`/api/users`, userInfo);
       // Api Call Section End
@@ -72,7 +75,7 @@ const Branding = () => {
       if (photo) {
         finalObj.bankLogo = photo;
       }
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.put(`/api/branding/${brandings._id}`, finalObj);
       // Api Call Section End
       messageApi.success("Branding Details Updated Successfully !");
@@ -92,7 +95,7 @@ const Branding = () => {
       let file = e.target.files[0];
       const formData = new FormData();
       formData.append("photo", file);
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.post("/api/upload", formData);
       setPhoto(data.filePath);
     } catch (error) {

@@ -120,10 +120,10 @@ const deleteData = async (req, res, schema) => {
 const findByAccountNo = async (req, res, schema) => {
   try {
     const query = req.body;
-    console.log(query);
+    // console.log(query);
 
     const dbRes = await dbService.findOneRecord(query, schema);
-    console.log(dbRes);
+    // console.log(dbRes);
 
     return res.status(200).json({
       message: "Record Found!!",

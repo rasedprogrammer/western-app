@@ -9,6 +9,7 @@ import {
   MinusOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
+
 const Dashboard = ({ data }) => {
   // const { totalTransactions, totalCredit } = data;
   console.log(data);

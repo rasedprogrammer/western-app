@@ -26,10 +26,13 @@ import {
   uploadFile,
 } from "../../../modules/modules";
 import useSWR, { mutate } from "swr";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const { Item } = Form;
 
 const NewAccount = () => {
+  const token = cookies.get("authToken");
   // Get User Info From SessionStorage
   const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
   // State Collection
@@ -50,7 +53,7 @@ const NewAccount = () => {
   useEffect(() => {
     const fetcher = async () => {
       try {
-        const httpReq = http();
+        const httpReq = http(token);
         const { data } = await httpReq.get("/api/customers");
 
         setAllCustomer(
@@ -96,7 +99,7 @@ const NewAccount = () => {
       finalObj.userType = "customer";
       finalObj.branch = userInfo?.branch;
       finalObj.createBy = userInfo?.email;
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.post(`/api/users`, finalObj);
       finalObj.customerLoginId = data?.data?._id;
       const obj = {
@@ -173,7 +176,7 @@ const NewAccount = () => {
       const obj = {
         isActive: !isActive,
       };
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.put(`/api/users/${loginId}`, obj);
       console.log(data, obj);
 
@@ -202,7 +205,7 @@ const NewAccount = () => {
       if (photo) {
         finalObj.profile = photo;
       }
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.put(`/api/customers/${edit._id}`, finalObj);
       messageApi.success("Customer Update Successfully !");
       setNo(no + 1);
@@ -222,7 +225,7 @@ const NewAccount = () => {
   // Delete Customer
   const onDeleteCustomer = async (id, loginId) => {
     try {
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.delete(`/api/users/${loginId}`);
       await httpReq.delete(`/api/customers/${id}`);
       messageApi.success("Customer Deleted Successfully !");

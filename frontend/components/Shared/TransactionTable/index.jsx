@@ -8,10 +8,13 @@ import {
   trimData,
 } from "../../../modules/modules";
 import { DownloadOutlined, PrinterOutlined } from "@ant-design/icons";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const { Item } = Form;
 
 const TransactionTable = ({ query = {} }) => {
+  const token = cookies.get("authToken");
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [accountNo, setAccountNo] = useState(query.accountNo || "");
@@ -33,7 +36,7 @@ const TransactionTable = ({ query = {} }) => {
     if (accountNo) searchParams.append("accountNo", accountNo);
     if (branch) searchParams.append("branch", branch);
     try {
-      const httpReq = http();
+      const httpReq = http(token);
       const res = await httpReq.get(
         `/api/transaction/pagination?${searchParams.toString()}`
       );
@@ -91,7 +94,7 @@ const TransactionTable = ({ query = {} }) => {
     try {
       values.branch = query.branch;
       if (query.isCustomer) values.accountNo = query.accountNo;
-      const httpReq = http();
+      const httpReq = http(token);
       let obj = trimData(values);
       const { data } = await httpReq.post(`/api/transaction/filter`, obj);
       setData(data.data);

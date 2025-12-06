@@ -3,9 +3,12 @@ import Adminlayout from "../../Layout/Adminlayout";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { trimData, http } from "../../../modules/modules";
 import { useEffect, useState } from "react";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const { Item } = Form;
 const Branch = () => {
+  const token = cookies.get("authToken");
   // States Collection
   const [branchForm] = Form.useForm();
   const [messageApi, context] = message.useMessage();
@@ -18,7 +21,7 @@ const Branch = () => {
   useEffect(() => {
     const fetcher = async () => {
       try {
-        const httpReq = http();
+        const httpReq = http(token);
         const { data } = await httpReq.get("/api/branch");
         console.log(data);
 
@@ -84,7 +87,7 @@ const Branch = () => {
       console.log(finalObj);
 
       finalObj.key = finalObj.branchName;
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.post(`/api/branch`, finalObj);
 
       messageApi.success("Branch Created Successfully !");
@@ -116,7 +119,7 @@ const Branch = () => {
     try {
       setLoading(true);
       let finalObj = trimData(values);
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.put(`/api/branch/${edit._id}`, finalObj);
       messageApi.success("Branch Update Successfully !");
       setNo(no + 1);
@@ -132,7 +135,7 @@ const Branch = () => {
   // Delete Branch
   const onDeleteBranch = async (id) => {
     try {
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.delete(`/api/branch/${id}`);
       messageApi.success("Branch Deleted Successfully !");
       setNo(no + 1);

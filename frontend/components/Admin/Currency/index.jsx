@@ -3,9 +3,12 @@ import Adminlayout from "../../Layout/Adminlayout";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { trimData, http } from "../../../modules/modules";
 import { useEffect, useState } from "react";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const { Item } = Form;
 const Currency = () => {
+  const token = cookies.get("authToken");
   // States Collection
   const [currencyForm] = Form.useForm();
   const [messageApi, context] = message.useMessage();
@@ -18,7 +21,7 @@ const Currency = () => {
   useEffect(() => {
     const fetcher = async () => {
       try {
-        const httpReq = http();
+        const httpReq = http(token);
         const { data } = await httpReq.get("/api/currency");
         console.log(data);
 
@@ -84,7 +87,7 @@ const Currency = () => {
       console.log(finalObj);
 
       finalObj.key = finalObj.currencyName;
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.post(`/api/currency`, finalObj);
 
       messageApi.success("Currency Created Successfully !");
@@ -116,7 +119,7 @@ const Currency = () => {
     try {
       setLoading(true);
       let finalObj = trimData(values);
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.put(`/api/currency/${edit._id}`, finalObj);
       messageApi.success("Currency Update Successfully !");
       setNo(no + 1);
@@ -132,7 +135,7 @@ const Currency = () => {
   // Delete Currency
   const onDeleteCurrency = async (id) => {
     try {
-      const httpReq = http();
+      const httpReq = http(token);
       await httpReq.delete(`/api/currency/${id}`);
       messageApi.success("Currency Deleted Successfully !");
       setNo(no + 1);

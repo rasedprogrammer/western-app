@@ -2,8 +2,12 @@ import { Card, Input, Image, Form, Select, Button, message, Empty } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { http, trimData } from "../../../modules/modules";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 const NewTransaction = () => {
+  const token = cookies.get("authToken");
+
   //   Get User Info From Session Storage
   const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
 
@@ -34,7 +38,7 @@ const NewTransaction = () => {
       finalObj.accountNo = accountDetails.accountNo;
       finalObj.branch = userInfo.branch;
 
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.post(`/api/transaction`, finalObj);
       const { customerBalance } = await httpReq.put(
         `/api/customers/${accountDetails._id}`,
@@ -46,7 +50,11 @@ const NewTransaction = () => {
       transactionForm.resetFields();
       setAccountDetails(null);
     } catch (error) {
-      messageApi.error("Unable to process transaction!!!");
+      messageApi.error(
+        error.response
+          ? error.response.data.message
+          : "Unable to process transaction!!!"
+      );
     }
   };
 
