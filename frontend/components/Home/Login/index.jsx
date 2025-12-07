@@ -61,9 +61,9 @@ const Login = () => {
       </div>
       {/* Login Form Section */}
       <div className="w-full md:w-1/2 flex justify-center items-center p-6 bg-white">
-        <Card className="w-full max-w-sm shadow-xl">
+        <Card className="w-full max-w-lg shadow-xl">
           <h1 className="text-2xl font-semibold mb-6 text-center">
-            Bank Login
+            The Western Tours And Travels Login
           </h1>
           <Form name="login" onFinish={onFinish} layout="vertical">
             <Item name="email" label="Email" rules={[{ required: true }]}>

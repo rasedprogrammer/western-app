@@ -28,6 +28,7 @@ const NewTransaction = () => {
   //   State Collection
   const [accountNo, setAccountNo] = useState(null);
   const [accountDetails, setAccountDetails] = useState(null);
+  console.log(accountDetails);
 
   //   On Finish Function
   const onFinish = async (values) => {
@@ -43,9 +44,11 @@ const NewTransaction = () => {
           Number(accountDetails.finalBalance) -
           Number(finalObj.transactionAmount);
       }
-      finalObj.currentBalance = accountDetails.finalBalance;
+
+      finalObj.currentBalance = balance;
       finalObj.customerId = accountDetails._id;
       finalObj.accountNo = accountDetails.accountNo;
+      finalObj.fullname = accountDetails.fullname;
       finalObj.branch = userInfo.branch;
       finalObj.issueDate = new Date(finalObj.issueDate);
       finalObj.flightDate = new Date(finalObj.flightDate);

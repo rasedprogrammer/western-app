@@ -35,6 +35,7 @@ const transactionSchema = new Schema(
     currentBalance: Number,
     accountNo: Number,
     branch: String,
+    fullname: String,
     key: String,
     customerId: String,
   },

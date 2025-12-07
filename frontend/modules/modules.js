@@ -67,6 +67,14 @@ export const formatDate = (d) => {
   return `${dd}-${mm}-${yy} ${tt}`;
 };
 
+export const formatDateV2 = (d) => {
+  if (!d) return "-";
+  const date = new Date(d);
+  return `${String(date.getDate()).padStart(2, "0")}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}-${date.getFullYear()}`;
+};
+
 // Print Function
 export const printBankTransactions = (data) => {
   let html = `

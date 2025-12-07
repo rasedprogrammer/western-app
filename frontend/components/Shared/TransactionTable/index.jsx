@@ -6,6 +6,7 @@ import {
   printBankTransactions,
   downloadTransaction,
   trimData,
+  formatDateV2,
 } from "../../../modules/modules";
 import { DownloadOutlined, PrinterOutlined } from "@ant-design/icons";
 import Cookies from "universal-cookie";
@@ -23,6 +24,7 @@ const TransactionTable = ({ query = {} }) => {
     current: 1,
     pageSize: 5,
   });
+
   const [loading, setLoading] = useState(false);
 
   const fetchTransactions = async (params = {}) => {
@@ -41,6 +43,8 @@ const TransactionTable = ({ query = {} }) => {
         `/api/transaction/pagination?${searchParams.toString()}`
       );
       setData(res.data.data);
+      console.log(res.data);
+
       setTotal(res.data.total);
       setPagination({
         current: res.data.page,
@@ -68,9 +72,51 @@ const TransactionTable = ({ query = {} }) => {
       key: "accountNo",
     },
     {
+      title: "Account Name",
+      dataIndex: "fullname",
+      key: "fullname",
+    },
+    {
       title: "Branch",
       dataIndex: "branch",
       key: "branch",
+    },
+    {
+      title: "Particular",
+      dataIndex: "paxName",
+      key: "paxName",
+    },
+    {
+      title: "Passport",
+      dataIndex: "paxNumber",
+      key: "paxNumber",
+    },
+    {
+      title: "Issue Date",
+      dataIndex: "issueDate",
+      key: "issueDate",
+      render: (d) => formatDateV2(d),
+    },
+    {
+      title: "Flight Date",
+      dataIndex: "flightDate",
+      key: "flightDate",
+      render: (d) => formatDateV2(d),
+    },
+    {
+      title: "Sector",
+      dataIndex: "sector",
+      key: "sector",
+    },
+    {
+      title: "AirCode",
+      dataIndex: "airline",
+      key: "airline",
+    },
+    {
+      title: "PNR",
+      dataIndex: "pnr",
+      key: "pnr",
     },
     {
       title: "Type",
@@ -83,10 +129,9 @@ const TransactionTable = ({ query = {} }) => {
       key: "transactionAmount",
     },
     {
-      title: "Date",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (d) => formatDate(d),
+      title: "Total",
+      dataIndex: "currentBalance",
+      key: "currentBalance",
     },
   ];
 
