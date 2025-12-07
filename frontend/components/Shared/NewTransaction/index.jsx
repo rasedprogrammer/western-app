@@ -1,4 +1,14 @@
-import { Card, Input, Image, Form, Select, Button, message, Empty } from "antd";
+import {
+  Card,
+  Input,
+  Image,
+  Form,
+  Select,
+  Button,
+  DatePicker,
+  message,
+  Empty,
+} from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { http, trimData } from "../../../modules/modules";
@@ -37,15 +47,16 @@ const NewTransaction = () => {
       finalObj.customerId = accountDetails._id;
       finalObj.accountNo = accountDetails.accountNo;
       finalObj.branch = userInfo.branch;
+      finalObj.issueDate = new Date(finalObj.issueDate);
+      finalObj.flightDate = new Date(finalObj.flightDate);
+
+      console.log(finalObj);
 
       const httpReq = http(token);
-      const { data } = await httpReq.post(`/api/transaction`, finalObj);
-      const { customerBalance } = await httpReq.put(
-        `/api/customers/${accountDetails._id}`,
-        {
-          finalBalance: balance,
-        }
-      );
+      await httpReq.post(`/api/transaction`, finalObj);
+      await httpReq.put(`/api/customers/${accountDetails._id}`, {
+        finalBalance: balance,
+      });
       messageApi.success("Transaction Create Successfully!!");
       transactionForm.resetFields();
       setAccountDetails(null);
@@ -65,11 +76,9 @@ const NewTransaction = () => {
         accountNo: Number(accountNo),
         branch: userInfo?.branch,
       };
-      console.log(obj);
 
-      const httpReq = http();
+      const httpReq = http(token);
       const { data } = await httpReq.post(`/api/find-by-account`, obj);
-      console.log(data);
 
       if (data?.data) {
         setAccountDetails(data?.data);
@@ -155,6 +164,52 @@ const NewTransaction = () => {
                 onFinish={onFinish}
                 layout="vertical"
               >
+                {/* Pax Name */}
+                <Form.Item
+                  label="Particular Name"
+                  name="paxName"
+                  rules={[{ required: true, message: "Please enter pax name" }]}
+                >
+                  <Input placeholder="Passenger Name" />
+                </Form.Item>
+
+                {/* Pax Number */}
+                <Form.Item label="Pax Number" name="paxNumber">
+                  <Input placeholder="Passenger Number" />
+                </Form.Item>
+                <div className="grid md:grid-cols-2 gap-x-3">
+                  {/* Issue Date */}
+                  <Form.Item
+                    label="Issue Date"
+                    name="issueDate"
+                    rules={[
+                      { required: true, message: "Please select issue date" },
+                    ]}
+                  >
+                    <DatePicker className="w-full" />
+                  </Form.Item>
+
+                  {/* Flight Date */}
+                  <Form.Item label="Flight Date" name="flightDate">
+                    <DatePicker className="w-full" />
+                  </Form.Item>
+                </div>
+                {/* Sector */}
+                <Form.Item label="Sector" name="sector">
+                  <Input placeholder="DAC-KUL" />
+                </Form.Item>
+
+                <div className="grid md:grid-cols-2 gap-x-3">
+                  {/* Airline */}
+                  <Form.Item label="Airline" name="airline">
+                    <Input placeholder="Emirates / Biman / Qatar" />
+                  </Form.Item>
+
+                  {/* PNR */}
+                  <Form.Item label="PNR" name="pnr">
+                    <Input placeholder="PNR / Booking Code" />
+                  </Form.Item>
+                </div>
                 <div className="grid md:grid-cols-2 gap-x-3">
                   {/* Transaction Type */}
                   <Form.Item
@@ -183,6 +238,10 @@ const NewTransaction = () => {
                 {/* Reference */}
                 <Form.Item label="Reference" name="reference">
                   <Input.TextArea />
+                </Form.Item>
+                {/* Sector */}
+                <Form.Item label="Sell Or Buy" name="sellOrBuy">
+                  <Input placeholder="Sell or Buy Customer or Vendor!!!" />
                 </Form.Item>
                 {/* Submit Button */}
                 <Form.Item>
