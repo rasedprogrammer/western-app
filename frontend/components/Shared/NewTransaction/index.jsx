@@ -15,7 +15,7 @@ import { http, trimData } from "../../../modules/modules";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
-const NewTransaction = () => {
+const NewTransaction = ({ query = {} }) => {
   const token = cookies.get("authToken");
 
   //   Get User Info From Session Storage
@@ -28,7 +28,7 @@ const NewTransaction = () => {
   //   State Collection
   const [accountNo, setAccountNo] = useState(null);
   const [accountDetails, setAccountDetails] = useState(null);
-  console.log(accountDetails);
+  const [reloadKey, setReloadKey] = useState(0);
 
   //   On Finish Function
   const onFinish = async (values) => {
@@ -63,6 +63,7 @@ const NewTransaction = () => {
       messageApi.success("Transaction Create Successfully!!");
       transactionForm.resetFields();
       setAccountDetails(null);
+      setReloadKey((k) => k + 1);
     } catch (error) {
       messageApi.error(
         error.response
@@ -100,18 +101,20 @@ const NewTransaction = () => {
       <Card
         title="New Transaction"
         extra={
-          <Input
-            onChange={(e) => {
-              setAccountNo(e.target.value);
-            }}
-            placeholder="Enter Account Number"
-            addonAfter={
-              <SearchOutlined
-                onClick={searchByAccountNo}
-                style={{ cursor: "pointer" }}
-              />
-            }
-          />
+          !query.isCustomer && (
+            <Input
+              onChange={(e) => {
+                setAccountNo(e.target.value);
+              }}
+              placeholder="Enter Account Number"
+              addonAfter={
+                <SearchOutlined
+                  onClick={searchByAccountNo}
+                  style={{ cursor: "pointer" }}
+                />
+              }
+            />
+          )
         }
       >
         {accountDetails ? (
@@ -260,7 +263,7 @@ const NewTransaction = () => {
             </div>
           </div>
         ) : (
-          <Empty />
+          <div></div>
         )}
       </Card>
     </div>

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, DatePicker, Form, Input, Table } from "antd";
+import { Button, Card, DatePicker, Form, Input, Table, Empty } from "antd";
 import {
-  formatDate,
   http,
   printBankTransactions,
   downloadTransaction,
@@ -14,10 +13,15 @@ const cookies = new Cookies();
 
 const { Item } = Form;
 
-const TransactionTable = ({ query = {} }) => {
+const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
+  if (!showTable) return null;
+
   const token = cookies.get("authToken");
+  const [form] = Form.useForm();
+
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
+
   const [accountNo, setAccountNo] = useState(query.accountNo || "");
   const [fullname, setFullname] = useState(query.fullname || "");
   const [branch, setBranch] = useState(query.branch || "");
@@ -52,25 +56,48 @@ const TransactionTable = ({ query = {} }) => {
         current: res.data.page,
         pageSize: res.data.pageSize,
       });
+      if (onDataLoaded) onDataLoaded(res.data.data || []);
     } catch (err) {
       console.error("Failed to fetch transactions", err);
+      if (onDataLoaded) onDataLoaded([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchTransactions(pagination);
-  }, [query]); // Re-run when new props come in
+  // useEffect(() => {
+  //   fetchTransactions(pagination);
+  // }, [query, reloadKey]); // Re-run when new props come in
 
-  const handleTableChange = (pagination) => {
-    fetchTransactions(pagination);
-    onFinish({
+  // const handleTableChange = (pagination) => {
+  //   fetchTransactions(pagination);
+  //   onFinish({
+  //     fromDate: form.getFieldValue("fromDate"),
+  //     toDate: form.getFieldValue("toDate"),
+  //     accountNo: form.getFieldValue("accountNo"),
+  //     fullname: form.getFieldValue("fullname"),
+  //   });
+  // };
+
+  useEffect(() => {
+    // Reset to page 1 whenever reloadKey or query changes
+    setPagination((p) => ({ ...p, current: 1 }));
+    fetchTransactions({ current: 1, pageSize: pagination.pageSize });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, reloadKey]);
+
+  const handleTableChange = (newPagination) => {
+    fetchTransactions(newPagination); // fetch table data for new page
+
+    // Reapply filter values from form
+    const values = {
       fromDate: form.getFieldValue("fromDate"),
       toDate: form.getFieldValue("toDate"),
       accountNo: form.getFieldValue("accountNo"),
       fullname: form.getFieldValue("fullname"),
-    });
+    };
+
+    onFinish(values);
   };
 
   const columns = [
@@ -142,19 +169,6 @@ const TransactionTable = ({ query = {} }) => {
       key: "currentBalance",
     },
   ];
-
-  // const onFinish = async (values) => {
-  //   try {
-  //     values.branch = query.branch;
-  //     if (query.isCustomer) values.accountNo = query.accountNo;
-  //     const httpReq = http(token);
-  //     let obj = trimData(values);
-  //     const { data } = await httpReq.post(`/api/transaction/filter`, obj);
-  //     setData(data.data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const onFinish = async (values) => {
     try {

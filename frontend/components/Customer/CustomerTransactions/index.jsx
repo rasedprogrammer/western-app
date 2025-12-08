@@ -7,7 +7,11 @@ const CustomerTransactions = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
   return (
     <Customerlayout>
-      <NewTransaction />
+      <NewTransaction
+        query={{
+          isCustomer: true,
+        }}
+      />
       <TransactionTable
         query={{
           accountNo: userInfo?.accountNo,
