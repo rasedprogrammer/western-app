@@ -47,33 +47,55 @@ const createData = async (req, res, schema) => {
 
 const filterData = async (req, res, schema) => {
   try {
-    const { fromDate, toDate, accountNo, branch } = req.body;
+    let {
+      fromDate,
+      toDate,
+      accountNo,
+      fullname,
+      branch,
+      page = 1,
+      pageSize = 10,
+    } = req.body;
+
     const startDate = new Date(fromDate);
     const endDate = new Date(toDate);
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
 
     const query = {
-      branch,
-      createdAt: {
-        $gte: startDate,
-        $lte: endDate,
-      },
+      issueDate: { $gte: startDate, $lte: endDate },
     };
-    if (accountNo && !accountNo !== "") {
+
+    if (branch) query.branch = branch;
+
+    // Account Number check
+    if (accountNo && String(accountNo).trim() !== "") {
       query.accountNo = Number(accountNo);
     }
 
-    const result = await schema.find(query);
+    // Fullname check (case-insensitive)
+    if (fullname && fullname.trim() !== "") {
+      query.fullname = new RegExp(fullname, "i");
+    }
+
+    const skip = (page - 1) * pageSize;
+
+    const [data, total] = await Promise.all([
+      schema.find(query).skip(skip).limit(pageSize),
+      schema.countDocuments(query),
+    ]);
 
     res.status(200).json({
-      message: "Data Find Successfully",
+      message: "Filtered Successfully",
       success: true,
-      data: result,
+      data,
+      total,
+      page,
+      pageSize,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Internal Server Error",
+      message: "Server Error",
       success: false,
       error,
     });

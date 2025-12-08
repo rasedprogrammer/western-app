@@ -19,6 +19,7 @@ const TransactionTable = ({ query = {} }) => {
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [accountNo, setAccountNo] = useState(query.accountNo || "");
+  const [fullname, setFullname] = useState(query.fullname || "");
   const [branch, setBranch] = useState(query.branch || "");
   const [pagination, setPagination] = useState({
     current: 1,
@@ -36,6 +37,7 @@ const TransactionTable = ({ query = {} }) => {
 
     // Add filters from state OR initial query
     if (accountNo) searchParams.append("accountNo", accountNo);
+    if (fullname) searchParams.append("fullname", fullname);
     if (branch) searchParams.append("branch", branch);
     try {
       const httpReq = http(token);
@@ -63,6 +65,12 @@ const TransactionTable = ({ query = {} }) => {
 
   const handleTableChange = (pagination) => {
     fetchTransactions(pagination);
+    onFinish({
+      fromDate: form.getFieldValue("fromDate"),
+      toDate: form.getFieldValue("toDate"),
+      accountNo: form.getFieldValue("accountNo"),
+      fullname: form.getFieldValue("fullname"),
+    });
   };
 
   const columns = [
@@ -135,14 +143,40 @@ const TransactionTable = ({ query = {} }) => {
     },
   ];
 
+  // const onFinish = async (values) => {
+  //   try {
+  //     values.branch = query.branch;
+  //     if (query.isCustomer) values.accountNo = query.accountNo;
+  //     const httpReq = http(token);
+  //     let obj = trimData(values);
+  //     const { data } = await httpReq.post(`/api/transaction/filter`, obj);
+  //     setData(data.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   const onFinish = async (values) => {
     try {
       values.branch = query.branch;
       if (query.isCustomer) values.accountNo = query.accountNo;
+
       const httpReq = http(token);
-      let obj = trimData(values);
-      const { data } = await httpReq.post(`/api/transaction/filter`, obj);
+
+      let body = {
+        ...trimData(values),
+        page: pagination.current,
+        pageSize: pagination.pageSize,
+      };
+
+      const { data } = await httpReq.post(`/api/transaction/filter`, body);
+
       setData(data.data);
+      setTotal(data.total);
+      setPagination({
+        current: data.page,
+        pageSize: data.pageSize,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -162,6 +196,11 @@ const TransactionTable = ({ query = {} }) => {
             {!query.isCustomer && (
               <Item label="Account No" name="accountNo">
                 <Input placeholder="Account No" />
+              </Item>
+            )}
+            {!query.isCustomer && (
+              <Item label="Account Name" name="fullname">
+                <Input placeholder="Account Name" />
               </Item>
             )}
             <Item>
