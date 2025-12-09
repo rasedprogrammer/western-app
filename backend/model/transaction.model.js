@@ -36,6 +36,7 @@ const transactionSchema = new Schema(
     accountNo: Number,
     branch: String,
     fullname: String,
+    accountType: String,
     key: String,
     customerId: String,
   },

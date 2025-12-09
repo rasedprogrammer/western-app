@@ -17,6 +17,7 @@ const customerSchema = new Schema(
     key: String,
     profile: String,
     signature: String,
+    accountType: String,
     document: String,
     finalBalance: {
       type: Number,

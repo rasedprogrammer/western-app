@@ -7,7 +7,6 @@ import {
   Button,
   DatePicker,
   message,
-  Empty,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
@@ -28,7 +27,6 @@ const NewTransaction = ({ query = {} }) => {
   //   State Collection
   const [accountNo, setAccountNo] = useState(null);
   const [accountDetails, setAccountDetails] = useState(null);
-  const [reloadKey, setReloadKey] = useState(0);
 
   //   On Finish Function
   const onFinish = async (values) => {
@@ -49,10 +47,12 @@ const NewTransaction = ({ query = {} }) => {
       finalObj.customerId = accountDetails._id;
       finalObj.accountNo = accountDetails.accountNo;
       finalObj.fullname = accountDetails.fullname;
+      finalObj.accountType = finalObj.accountType;
       finalObj.branch = userInfo.branch;
       finalObj.issueDate = new Date(finalObj.issueDate);
       finalObj.flightDate = new Date(finalObj.flightDate);
 
+      console.log("FORM accountType:", values.accountType);
       console.log(finalObj);
 
       const httpReq = http(token);
@@ -200,20 +200,38 @@ const NewTransaction = ({ query = {} }) => {
                     <DatePicker className="w-full" />
                   </Form.Item>
                 </div>
-                {/* Sector */}
-                <Form.Item label="Sector" name="sector">
-                  <Input placeholder="DAC-KUL" />
-                </Form.Item>
 
                 <div className="grid md:grid-cols-2 gap-x-3">
+                  {/* Sector */}
+                  <Form.Item label="Sector" name="sector">
+                    <Input placeholder="DAC-KUL" />
+                  </Form.Item>
+
                   {/* Airline */}
                   <Form.Item label="Airline" name="airline">
                     <Input placeholder="Emirates / Biman / Qatar" />
                   </Form.Item>
-
+                </div>
+                <div className="grid md:grid-cols-2 gap-x-3">
                   {/* PNR */}
                   <Form.Item label="PNR" name="pnr">
                     <Input placeholder="PNR / Booking Code" />
+                  </Form.Item>
+
+                  {/* Transaction Type */}
+                  <Form.Item
+                    label="Account Type"
+                    rules={[{ required: true }]}
+                    name="accountType"
+                  >
+                    <Select
+                      placeholder="Account Type"
+                      className="w-full"
+                      options={[
+                        { value: "vendor", label: "Vendor" },
+                        { value: "customer", label: "Customer" },
+                      ]}
+                    />
                   </Form.Item>
                 </div>
                 <div className="grid md:grid-cols-2 gap-x-3">

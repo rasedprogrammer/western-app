@@ -147,19 +147,43 @@ export const downloadTransaction = (data = []) => {
 
   const tableData = data.map((item) => [
     item.accountNo,
-    item.branch,
+    item.fullname,
+    item.accountType,
+    item.paxName,
+    item.paxNumber,
+    formatDateV2(item.issueDate),
+    formatDateV2(item.flightDate),
+    item.sector,
+    item.airline,
+    item.pnr,
     item.transactionType.toUpperCase(),
+    item.currentBalance,
     item.transactionAmount,
-    formatDate(item.createdAt),
   ]);
 
   // Add transactions table
   doc.autoTable({
-    head: [["Account No", "Branch", "Type", "Amount", "Date"]],
+    head: [
+      [
+        "Account No",
+        "Account Name",
+        "Account Type",
+        "Particular",
+        "Passport",
+        "Issue Date",
+        "Flight Date",
+        "Sector",
+        "AirCode",
+        "PNR",
+        "Type",
+        "Amount",
+        "Total",
+      ],
+    ],
     body: tableData,
     startY: 25,
     theme: "grid",
-    styles: { halign: "center" },
+    styles: { halign: "center", fontSize: "6" },
     headStyles: { fillColor: [0, 102, 204], halign: "center" },
     columnStyles: { 3: { halign: "right" } },
   });

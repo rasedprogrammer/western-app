@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card, DatePicker, Form, Input, Table, Empty } from "antd";
 import {
   http,
@@ -13,9 +13,7 @@ const cookies = new Cookies();
 
 const { Item } = Form;
 
-const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
-  if (!showTable) return null;
-
+const TransactionTable = ({ query = {} }) => {
   const token = cookies.get("authToken");
   const [form] = Form.useForm();
 
@@ -24,6 +22,7 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
 
   const [accountNo, setAccountNo] = useState(query.accountNo || "");
   const [fullname, setFullname] = useState(query.fullname || "");
+  const [accountType, setAccountType] = useState(query.accountType || "");
   const [branch, setBranch] = useState(query.branch || "");
   const [pagination, setPagination] = useState({
     current: 1,
@@ -42,6 +41,7 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
     // Add filters from state OR initial query
     if (accountNo) searchParams.append("accountNo", accountNo);
     if (fullname) searchParams.append("fullname", fullname);
+    if (accountType) searchParams.append("accountType", accountType);
     if (branch) searchParams.append("branch", branch);
     try {
       const httpReq = http(token);
@@ -56,35 +56,19 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
         current: res.data.page,
         pageSize: res.data.pageSize,
       });
-      if (onDataLoaded) onDataLoaded(res.data.data || []);
     } catch (err) {
       console.error("Failed to fetch transactions", err);
-      if (onDataLoaded) onDataLoaded([]);
     } finally {
       setLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   fetchTransactions(pagination);
-  // }, [query, reloadKey]); // Re-run when new props come in
-
-  // const handleTableChange = (pagination) => {
-  //   fetchTransactions(pagination);
-  //   onFinish({
-  //     fromDate: form.getFieldValue("fromDate"),
-  //     toDate: form.getFieldValue("toDate"),
-  //     accountNo: form.getFieldValue("accountNo"),
-  //     fullname: form.getFieldValue("fullname"),
-  //   });
-  // };
 
   useEffect(() => {
     // Reset to page 1 whenever reloadKey or query changes
     setPagination((p) => ({ ...p, current: 1 }));
     fetchTransactions({ current: 1, pageSize: pagination.pageSize });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query, reloadKey]);
+  }, [query]);
 
   const handleTableChange = (newPagination) => {
     fetchTransactions(newPagination); // fetch table data for new page
@@ -95,6 +79,7 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
       toDate: form.getFieldValue("toDate"),
       accountNo: form.getFieldValue("accountNo"),
       fullname: form.getFieldValue("fullname"),
+      accountType: form.getFieldValue("accountType"),
     };
 
     onFinish(values);
@@ -112,9 +97,9 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
       key: "fullname",
     },
     {
-      title: "Branch",
-      dataIndex: "branch",
-      key: "branch",
+      title: "Account Type",
+      dataIndex: "accountType",
+      key: "accountType",
     },
     {
       title: "Particular",
@@ -174,6 +159,8 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
     try {
       values.branch = query.branch;
       if (query.isCustomer) values.accountNo = query.accountNo;
+      if (query.isCustomer) values.fullname = query.fullname;
+      if (query.isCustomer) values.accountType = query.accountType;
 
       const httpReq = http(token);
 
@@ -215,6 +202,11 @@ const TransactionTable = ({ query = {}, reloadKey = 0, showTable = true }) => {
             {!query.isCustomer && (
               <Item label="Account Name" name="fullname">
                 <Input placeholder="Account Name" />
+              </Item>
+            )}
+            {!query.isCustomer && (
+              <Item label="Account Type" name="accountType">
+                <Input placeholder="Account Type" />
               </Item>
             )}
             <Item>

@@ -52,6 +52,7 @@ const filterData = async (req, res, schema) => {
       toDate,
       accountNo,
       fullname,
+      accountType,
       branch,
       page = 1,
       pageSize = 10,
@@ -78,6 +79,9 @@ const filterData = async (req, res, schema) => {
       query.fullname = new RegExp(fullname, "i");
     }
 
+    if (accountType && accountType.trim() !== "") {
+      query.accountType = accountType;
+    }
     const skip = (page - 1) * pageSize;
 
     const [data, total] = await Promise.all([
