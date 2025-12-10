@@ -2,13 +2,17 @@ const express = require("express");
 const router = express.Router();
 const controller = require("../controller/controller");
 const userSchema = require("../model/users.model");
-const { verifyToken, isAdmin } = require("../middlewares/middleware");
+const {
+  verifyToken,
+  isAdmin,
+  isAdminEmployee,
+} = require("../middlewares/middleware");
 
 router.get("/", verifyToken, isAdmin, (req, res) => {
   controller.getData(req, res, userSchema);
 });
 
-router.post("/", verifyToken, isAdmin, (req, res) => {
+router.post("/", verifyToken, (req, res) => {
   controller.createData(req, res, userSchema);
 });
 

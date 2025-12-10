@@ -334,6 +334,12 @@ const NewAccount = () => {
         }
       },
     },
+    // User Type
+    {
+      title: "Account Type",
+      dataIndex: "accountType",
+      key: "accountType",
+    },
     // Account No
     {
       title: "Account No",
@@ -609,6 +615,20 @@ const NewAccount = () => {
               <Input type="file" onChange={handleDocument} />
             </Item>
           </div>
+          {/* Account Type Input */}
+          <Item
+            label="Account Type"
+            name="accountType"
+            rules={[{ required: true, message: "Account Type is required!" }]}
+          >
+            <Select
+              placeholder="Select Account Type"
+              options={[
+                { label: "Customer", value: "customer" },
+                { label: "Vendor", value: "vendor" },
+              ]}
+            />
+          </Item>
           {/* Address Input */}
           <Item
             label="Address"
