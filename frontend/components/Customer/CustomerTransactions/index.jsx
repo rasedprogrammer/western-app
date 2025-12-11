@@ -5,6 +5,7 @@ import TransactionTable from "../../Shared/TransactionTable";
 const CustomerTransactions = () => {
   // Get UserInfo From SessionStorage
   const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+
   return (
     <Customerlayout>
       <NewTransaction

@@ -5,7 +5,6 @@ import { fetchData } from "../../modules/modules";
 
 const AdminDashboard = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
-  console.log(userInfo);
 
   const { data: trData, error: trError } = useSWR(
     `/api/transaction/summary?branch=${userInfo.branch}`,

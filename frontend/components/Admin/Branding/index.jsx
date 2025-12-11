@@ -24,7 +24,6 @@ const Branding = () => {
       try {
         const httpReq = http(token);
         const { data } = await httpReq.get("/api/branding");
-        console.log(data);
         bankFrom.setFieldsValue(data?.data[0]);
         setBrandings(data?.data[0]);
         setEdit(true);

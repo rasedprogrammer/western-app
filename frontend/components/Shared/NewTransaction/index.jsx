@@ -47,13 +47,10 @@ const NewTransaction = ({ query = {} }) => {
       finalObj.customerId = accountDetails._id;
       finalObj.accountNo = accountDetails.accountNo;
       finalObj.fullname = accountDetails.fullname;
-      finalObj.accountType = finalObj.accountType;
+      finalObj.accountType = accountDetails.accountType;
       finalObj.branch = userInfo.branch;
       finalObj.issueDate = new Date(finalObj.issueDate);
       finalObj.flightDate = new Date(finalObj.flightDate);
-
-      console.log("FORM accountType:", values.accountType);
-      console.log(finalObj);
 
       const httpReq = http(token);
       await httpReq.post(`/api/transaction`, finalObj);
@@ -72,7 +69,6 @@ const NewTransaction = ({ query = {} }) => {
       );
     }
   };
-
   //   Search Account Function
   const searchByAccountNo = async () => {
     try {
@@ -209,31 +205,13 @@ const NewTransaction = ({ query = {} }) => {
 
                   {/* Airline */}
                   <Form.Item label="Airline" name="airline">
-                    <Input placeholder="Emirates / Biman / Qatar" />
+                    <Input placeholder="EK / BS / 6E" />
                   </Form.Item>
                 </div>
-                <div className="grid md:grid-cols-2 gap-x-3">
-                  {/* PNR */}
-                  <Form.Item label="PNR" name="pnr">
-                    <Input placeholder="PNR / Booking Code" />
-                  </Form.Item>
-
-                  {/* Transaction Type */}
-                  <Form.Item
-                    label="Account Type"
-                    rules={[{ required: true }]}
-                    name="accountType"
-                  >
-                    <Select
-                      placeholder="Account Type"
-                      className="w-full"
-                      options={[
-                        { value: "vendor", label: "Vendor" },
-                        { value: "customer", label: "Customer" },
-                      ]}
-                    />
-                  </Form.Item>
-                </div>
+                {/* PNR */}
+                <Form.Item label="PNR" name="pnr">
+                  <Input placeholder="PNR / Booking Code" />
+                </Form.Item>
                 <div className="grid md:grid-cols-2 gap-x-3">
                   {/* Transaction Type */}
                   <Form.Item

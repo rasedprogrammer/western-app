@@ -5,20 +5,13 @@ const customerSchema = new Schema(
   {
     accountNo: Number,
     fullname: String,
-    mobile: String,
-    fatherName: String,
     email: {
       type: String,
       unique: true,
     },
-    dob: String,
-    gender: String,
-    currency: String,
     key: String,
     profile: String,
-    signature: String,
     accountType: String,
-    document: String,
     finalBalance: {
       type: Number,
       default: 0,

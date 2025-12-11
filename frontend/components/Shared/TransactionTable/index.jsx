@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Card, DatePicker, Form, Input, Table, Empty } from "antd";
+import { Button, Card, DatePicker, Form, Input, Table, message } from "antd";
 import {
   http,
   printBankTransactions,
@@ -14,15 +14,19 @@ const cookies = new Cookies();
 const { Item } = Form;
 
 const TransactionTable = ({ query = {} }) => {
+  const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+  const [messageApi, contextHolder] = message.useMessage();
+
   const token = cookies.get("authToken");
   const [form] = Form.useForm();
 
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const [accountNo, setAccountNo] = useState(query.accountNo || "");
+  const [accountNo, setAccountNo] = useState(userInfo.accountNo || "");
   const [fullname, setFullname] = useState(query.fullname || "");
   const [accountType, setAccountType] = useState(query.accountType || "");
+
   const [branch, setBranch] = useState(query.branch || "");
   const [pagination, setPagination] = useState({
     current: 1,
@@ -49,7 +53,6 @@ const TransactionTable = ({ query = {} }) => {
         `/api/transaction/pagination?${searchParams.toString()}`
       );
       setData(res.data.data);
-      console.log(res.data);
 
       setTotal(res.data.total);
       setPagination({
@@ -80,6 +83,7 @@ const TransactionTable = ({ query = {} }) => {
       accountNo: form.getFieldValue("accountNo"),
       fullname: form.getFieldValue("fullname"),
       accountType: form.getFieldValue("accountType"),
+      flightDate: form.getFieldValue("flightDate"),
     };
 
     onFinish(values);
@@ -161,6 +165,7 @@ const TransactionTable = ({ query = {} }) => {
       if (query.isCustomer) values.accountNo = query.accountNo;
       if (query.isCustomer) values.fullname = query.fullname;
       if (query.isCustomer) values.accountType = query.accountType;
+      if (query.isCustomer) values.flightDate = query.flightDate;
 
       const httpReq = http(token);
 
@@ -209,6 +214,12 @@ const TransactionTable = ({ query = {} }) => {
                 <Input placeholder="Account Type" />
               </Item>
             )}
+            {!query.isCustomer && (
+              <Item label="Flight Date" name="flightDate">
+                <DatePicker />
+              </Item>
+            )}
+
             <Item>
               <Button
                 type="text"

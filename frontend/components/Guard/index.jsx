@@ -24,14 +24,12 @@ const Guard = ({ endpoint, role }) => {
       try {
         const httpReq = http(token);
         const { data } = await httpReq.get(endpoint);
-        console.log("Data", data, role);
         const user = data?.data?.userType;
         sessionStorage.setItem("userInfo", JSON.stringify(data?.data));
 
         setUserType(user);
         setLoading(false);
         setAuthorised(true);
-        console.log("Auth", authorised);
       } catch (error) {
         setUserType(null);
         setLoading(false);
@@ -48,7 +46,6 @@ const Guard = ({ endpoint, role }) => {
   if (authorised && role === userType) {
     return <Outlet />;
   } else if (authorised === true && role === userType) {
-    console.log(authorised, role);
     return <Outlet />;
   } else if (authorised && role === userType) {
     return <Outlet />;

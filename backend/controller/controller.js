@@ -53,6 +53,7 @@ const filterData = async (req, res, schema) => {
       accountNo,
       fullname,
       accountType,
+      flightDate,
       branch,
       page = 1,
       pageSize = 10,
@@ -82,6 +83,17 @@ const filterData = async (req, res, schema) => {
     if (accountType && accountType.trim() !== "") {
       query.accountType = accountType;
     }
+
+    if (flightDate && flightDate.trim() !== "") {
+      const fDate = new Date(flightDate);
+      fDate.setHours(0, 0, 0, 0);
+
+      const fEnd = new Date(flightDate);
+      fEnd.setHours(23, 59, 59, 999);
+
+      query.flightDate = { $gte: fDate, $lte: fEnd };
+    }
+
     const skip = (page - 1) * pageSize;
 
     const [data, total] = await Promise.all([
@@ -146,10 +158,8 @@ const deleteData = async (req, res, schema) => {
 const findByAccountNo = async (req, res, schema) => {
   try {
     const query = req.body;
-    // console.log(query);
 
     const dbRes = await dbService.findOneRecord(query, schema);
-    // console.log(dbRes);
 
     return res.status(200).json({
       message: "Record Found!!",

@@ -23,7 +23,6 @@ const Currency = () => {
       try {
         const httpReq = http(token);
         const { data } = await httpReq.get("/api/currency");
-        console.log(data);
 
         setAllCurrency(data.data);
       } catch (error) {
@@ -84,7 +83,6 @@ const Currency = () => {
     try {
       setLoading(true);
       const finalObj = trimData(values);
-      console.log(finalObj);
 
       finalObj.key = finalObj.currencyName;
       const httpReq = http(token);

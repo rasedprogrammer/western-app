@@ -131,7 +131,6 @@ export const printBankTransactions = (data) => {
 // Download Transaction Function
 export const downloadTransaction = (data = []) => {
   if (!data.length) return alert("No transaction data found!");
-  console.log(data);
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();

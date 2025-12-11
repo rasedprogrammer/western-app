@@ -8,7 +8,7 @@ const {
   isAdminEmployee,
 } = require("../middlewares/middleware");
 
-router.get("/", verifyToken, isAdmin, (req, res) => {
+router.get("/", verifyToken, (req, res) => {
   controller.getData(req, res, userSchema);
 });
 
@@ -16,11 +16,11 @@ router.post("/", verifyToken, (req, res) => {
   controller.createData(req, res, userSchema);
 });
 
-router.put("/:id", verifyToken, isAdmin, (req, res) => {
+router.put("/:id", verifyToken, (req, res) => {
   controller.updateData(req, res, userSchema);
 });
 
-router.delete("/:id", verifyToken, isAdmin, (req, res) => {
+router.delete("/:id", verifyToken, (req, res) => {
   controller.deleteData(req, res, userSchema);
 });
 

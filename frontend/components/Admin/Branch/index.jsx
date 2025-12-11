@@ -23,7 +23,6 @@ const Branch = () => {
       try {
         const httpReq = http(token);
         const { data } = await httpReq.get("/api/branch");
-        console.log(data);
 
         setAllBranch(data.data);
       } catch (error) {
@@ -84,7 +83,6 @@ const Branch = () => {
     try {
       setLoading(true);
       const finalObj = trimData(values);
-      console.log(finalObj);
 
       finalObj.key = finalObj.branchName;
       const httpReq = http(token);

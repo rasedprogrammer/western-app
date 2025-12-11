@@ -42,8 +42,6 @@ const NewAccount = () => {
   const [accountModal, setAccountModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
-  const [document, setDocuments] = useState(null);
-  const [signature, setSignature] = useState(null);
   const [allCustomer, setAllCustomer] = useState(null);
   const [finalCustomer, setFinalCustomer] = useState(null);
   const [no, setNo] = useState(0);
@@ -146,30 +144,6 @@ const NewAccount = () => {
     }
   };
 
-  // Handle Signature Upload
-  const handleSignature = async (e) => {
-    const file = e.target.files[0];
-    const folderName = "customerSignature";
-    try {
-      const result = await uploadFile(file, folderName);
-      setSignature(result.filePath);
-    } catch (error) {
-      messageApi.error("Signature Photo Upload Failed !");
-    }
-  };
-
-  // Handle Document Upload
-  const handleDocument = async (e) => {
-    const file = e.target.files[0];
-    const folderName = "customerDocument";
-    try {
-      const result = await uploadFile(file, folderName);
-      setDocuments(result.filePath);
-    } catch (error) {
-      messageApi.error("Document Photo Upload Failed !");
-    }
-  };
-
   // Update is Active
   const updateIsActive = async (id, isActive, loginId) => {
     try {
@@ -178,7 +152,6 @@ const NewAccount = () => {
       };
       const httpReq = http(token);
       const { data } = await httpReq.put(`/api/users/${loginId}`, obj);
-      console.log(data, obj);
 
       await httpReq.put(`/api/customers/${id}`, obj);
       messageApi.success("Record updated successfully !");
@@ -247,19 +220,13 @@ const NewAccount = () => {
           cust?.accountNo.toString().toLowerCase().indexOf(value) != -1
         ) {
           return cust;
-        } else if (cust?.dob.toLowerCase().indexOf(value) != -1) {
-          return cust;
         } else if (cust?.email.toLowerCase().indexOf(value) != -1) {
-          return cust;
-        } else if (cust?.mobile.toLowerCase().indexOf(value) != -1) {
           return cust;
         } else if (
           cust?.finalBalance.toString().toLowerCase().indexOf(value) != -1
         ) {
           return cust;
         } else if (cust?.createBy.toLowerCase().indexOf(value) != -1) {
-          return cust;
-        } else if (cust?.fatherName.toLowerCase().indexOf(value) != -1) {
           return cust;
         }
       });
@@ -287,58 +254,20 @@ const NewAccount = () => {
         />
       ),
     },
-    // Signature
-    {
-      title: "Signature",
-      key: "signature",
-      render: (src, obj) => (
-        <Image
-          src={`${import.meta.env.VITE_BASEURL}/${obj?.signature}`}
-          className="rounded-full"
-          width={40}
-          height={40}
-        />
-      ),
-    },
-    // Document
-    {
-      title: "Document",
-      key: "document",
-      render: (src, obj) => (
-        <Button
-          type="text"
-          shape="circle"
-          className="!bg-blue-100 !text-blue-500"
-          icon={<DownloadOutlined />}
-        />
-      ),
-    },
-    // Branch
-    {
-      title: "Branch",
-      dataIndex: "branch",
-      key: "branch",
-    },
-    // User Type
-    {
-      title: "User Type",
-      dataIndex: "userType",
-      key: "userType",
-      render: (text) => {
-        if (text === "admin") {
-          return <span className="capitalize text-teal-600">{text}</span>;
-        } else if (text === "employee") {
-          return <span className="capitalize text-red-700">{text}</span>;
-        } else {
-          return <span className="capitalize text-indigo-800">{text}</span>;
-        }
-      },
-    },
     // User Type
     {
       title: "Account Type",
       dataIndex: "accountType",
       key: "accountType",
+      render: (text) => {
+        if (text === "customer") {
+          return <span className="capitalize text-teal-600">{text}</span>;
+        } else if (text === "vendor") {
+          return <span className="capitalize text-indigo-800">{text}</span>;
+        } else {
+          return <span className="capitalize text-red-800">{text}</span>;
+        }
+      },
     },
     // Account No
     {
@@ -358,23 +287,11 @@ const NewAccount = () => {
       dataIndex: "fullname",
       key: "fullname",
     },
-    // DOB
-    {
-      title: "DOB",
-      dataIndex: "dob",
-      key: "dob",
-    },
     // Email
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-    },
-    // Mobile
-    {
-      title: "Mobile",
-      dataIndex: "mobile",
-      key: "mobile",
     },
     // Address
     {
@@ -535,100 +452,27 @@ const NewAccount = () => {
             >
               <Input placeholder="Fullname" />
             </Item>
-            {/* Mobile Input */}
-            <Item
-              label="Mobile"
-              name="mobile"
-              rules={[{ required: true, message: "Mobile is required!" }]}
-            >
-              <Input placeholder="Mobile" />
-            </Item>
-            {/* Father Name Input */}
-            <Item
-              label="Father Name"
-              name="fatherName"
-              rules={[{ required: true, message: "Father Name is required!" }]}
-            >
-              <Input placeholder="Father Name" />
-            </Item>
 
-            {/* Father Name Input */}
+            {/* Account Type Input */}
             <Item
-              label="DOB"
-              name="dob"
-              rules={[{ required: true, message: "DOB is required!" }]}
-            >
-              <Input type="date" />
-            </Item>
-            {/* Gender Input */}
-            <Item
-              label="Gender"
-              name="gender"
-              rules={[{ required: true, message: "Gender is required!" }]}
+              label="Account Type"
+              name="accountType"
+              rules={[{ required: true, message: "Account Type is required!" }]}
             >
               <Select
-                placeholder="Select Gender"
+                placeholder="Select Account Type"
                 options={[
-                  { label: "Male", value: "male" },
-                  { label: "Female", value: "male" },
-                  { label: "Other", value: "other" },
-                ]}
-              />
-            </Item>
-            {/* Currency Input */}
-            <Item
-              label="Currency"
-              name="currency"
-              rules={[{ required: true, message: "Currency is required!" }]}
-            >
-              <Select
-                placeholder="Select Currency"
-                options={[
-                  { label: "BDT", value: "bdt" },
-                  { label: "USD", value: "usd" },
-                  { label: "INR", value: "inr" },
+                  { label: "Customer", value: "customer" },
+                  { label: "Vendor", value: "vendor" },
                 ]}
               />
             </Item>
             {/* Profile Input */}
-            <Item
-              label="Profile"
-              name="pic"
-              // rules={[{ required: true, message: "Photo is required!" }]}
-            >
+            <Item label="Profile" name="pic">
               <Input type="file" onChange={handlePhoto} />
             </Item>
-            {/* Signature Input */}
-            <Item
-              label="Signature"
-              name="sign"
-              // rules={[{ required: true, message: "Signature is required!" }]}
-            >
-              <Input type="file" onChange={handleSignature} />
-            </Item>
-            {/* Document Input */}
-            <Item
-              label="Document"
-              name="doc"
-              // rules={[{ required: true, message: "Document is required!" }]}
-            >
-              <Input type="file" onChange={handleDocument} />
-            </Item>
           </div>
-          {/* Account Type Input */}
-          <Item
-            label="Account Type"
-            name="accountType"
-            rules={[{ required: true, message: "Account Type is required!" }]}
-          >
-            <Select
-              placeholder="Select Account Type"
-              options={[
-                { label: "Customer", value: "customer" },
-                { label: "Vendor", value: "vendor" },
-              ]}
-            />
-          </Item>
+
           {/* Address Input */}
           <Item
             label="Address"

@@ -11,9 +11,6 @@ import {
 } from "@ant-design/icons";
 
 const Dashboard = ({ data }) => {
-  // const { totalTransactions, totalCredit } = data;
-  console.log(data);
-
   return (
     <div>
       <div className="grid md:grid-cols-4 gap-6">
