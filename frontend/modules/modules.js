@@ -80,7 +80,7 @@ export const printBankTransactions = (data) => {
   let html = `
     <html>
     <head>
-      <title>Bank Transactions Details</title>
+      <title>Western Transactions Details</title>
       <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         h2 { text-align: center; margin-bottom: 20px; }
@@ -96,10 +96,18 @@ export const printBankTransactions = (data) => {
         <thead>
           <tr>
             <th>Account No</th>
-            <th>Branch</th>
+            <th>Account Name</th>
+            <th>Account Type</th>
+            <th>Particular</th>
+            <th>Passport</th>
+            <th>Issue Date</th>
+            <th>Flight Date</th>
+            <th>Sector</th>
+            <th>AirCode</th>
+            <th>PNR</th>
             <th>Type</th>
             <th>Amount</th>
-            <th>Date</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>`;
@@ -108,10 +116,18 @@ export const printBankTransactions = (data) => {
     html += `
               <tr>
                 <td>${txn.accountNo}</td>
-                <td>${txn.branch}</td>
-                <td>${txn.transactionType}</td>
+                <td>${txn.fullname}</td>
+                <td>${txn.accountType.toUpperCase()}</td>
+                <td>${txn.paxName}</td>
+                <td>${txn.paxNumber}</td>
+                <td>${formatDateV2(txn.issueDate)}</td>
+                <td>${formatDateV2(txn.flightDate)}</td>
+                <td>${txn.sector}</td>
+                <td>${txn.airline}</td>
+                <td>${txn.pnr}</td>
+                <td>${txn.transactionType.toUpperCase()}</td>
                 <td>${txn.transactionAmount}</td>
-                <td>${formatDate(txn.createdAt)}</td>
+                <td>${txn.currentBalance}</td>
               </tr>`;
   });
 
@@ -156,9 +172,11 @@ export const downloadTransaction = (data = []) => {
     item.airline,
     item.pnr,
     item.transactionType.toUpperCase(),
-    item.currentBalance,
     item.transactionAmount,
+    item.currentBalance,
   ]);
+
+  const finalBalance = data.map((item) => item.currentBalance);
 
   // Add transactions table
   doc.autoTable({
@@ -187,6 +205,8 @@ export const downloadTransaction = (data = []) => {
     columnStyles: { 3: { halign: "right" } },
   });
 
+  console.log(finalBalance);
+
   // Calculate totals
   const totalCredit = data
     .filter((t) => t.transactionType === "cr")
@@ -209,6 +229,7 @@ export const downloadTransaction = (data = []) => {
       ["Total Credit", totalCredit.toLocaleString("en-IN")],
       ["Total Debit", totalDebit.toLocaleString("en-IN")],
       ["Balance", balance.toLocaleString("en-IN")],
+      ["Current Due", balance.toLocaleString("en-IN")],
     ],
     headStyles: { fillColor: [60, 179, 113], halign: "center" }, // green header
     styles: { halign: "right", fontStyle: "bold" },
