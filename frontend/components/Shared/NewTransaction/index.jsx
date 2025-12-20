@@ -52,7 +52,7 @@ const NewTransaction = ({ query = {} }) => {
       finalObj.issueDate = new Date(finalObj.issueDate);
       finalObj.flightDate = new Date(finalObj.flightDate);
 
-      const httpReq = http(token);
+      const httpReq = http();
       await httpReq.post(`/api/transaction`, finalObj);
       await httpReq.put(`/api/customers/${accountDetails._id}`, {
         finalBalance: balance,
@@ -60,7 +60,7 @@ const NewTransaction = ({ query = {} }) => {
       messageApi.success("Transaction Create Successfully!!");
       transactionForm.resetFields();
       setAccountDetails(null);
-      setReloadKey((k) => k + 1);
+      // setReloadKey((k) => k + 1);
     } catch (error) {
       messageApi.error(
         error.response

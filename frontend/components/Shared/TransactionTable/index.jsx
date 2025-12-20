@@ -89,93 +89,152 @@ const TransactionTable = ({ query = {} }) => {
     onFinish(values);
   };
 
-  const columns = [
-    {
-      title: "Account No",
-      dataIndex: "accountNo",
-      key: "accountNo",
-    },
-    {
-      title: "Account Name",
-      dataIndex: "fullname",
-      key: "fullname",
-    },
-    {
-      title: "Account Type",
-      dataIndex: "accountType",
-      key: "accountType",
-    },
-    {
-      title: "Particular",
-      dataIndex: "paxName",
-      key: "paxName",
-    },
-    {
-      title: "Passport",
-      dataIndex: "paxNumber",
-      key: "paxNumber",
-    },
-    {
-      title: "Issue Date",
-      dataIndex: "issueDate",
-      key: "issueDate",
-      render: (d) => formatDateV2(d),
-    },
-    {
-      title: "Flight Date",
-      dataIndex: "flightDate",
-      key: "flightDate",
-      render: (d) => formatDateV2(d),
-    },
-    {
-      title: "Sector",
-      dataIndex: "sector",
-      key: "sector",
-    },
-    {
-      title: "AirCode",
-      dataIndex: "airline",
-      key: "airline",
-    },
-    {
-      title: "PNR",
-      dataIndex: "pnr",
-      key: "pnr",
-    },
-    {
-      title: "Type",
-      dataIndex: "transactionType",
-      key: "transactionType",
-    },
-    {
-      title: "Amount",
-      dataIndex: "transactionAmount",
-      key: "transactionAmount",
-    },
-    {
-      title: "Total",
-      dataIndex: "currentBalance",
-      key: "currentBalance",
-    },
-  ];
+  const columns = query.isCustomer
+    ? [
+        {
+          title: "Account Name",
+          dataIndex: "fullname",
+          key: "fullname",
+        },
+        {
+          title: "Particular",
+          dataIndex: "paxName",
+          key: "paxName",
+        },
+        {
+          title: "Passport",
+          dataIndex: "paxNumber",
+          key: "paxNumber",
+        },
+        {
+          title: "Issue Date",
+          dataIndex: "issueDate",
+          key: "issueDate",
+          render: (d) => formatDateV2(d),
+        },
+        {
+          title: "Flight Date",
+          dataIndex: "flightDate",
+          key: "flightDate",
+          render: (d) => formatDateV2(d),
+        },
+        {
+          title: "Sector",
+          dataIndex: "sector",
+          key: "sector",
+        },
+        {
+          title: "AirCode",
+          dataIndex: "airline",
+          key: "airline",
+        },
+        {
+          title: "PNR",
+          dataIndex: "pnr",
+          key: "pnr",
+        },
+        {
+          title: "Type",
+          dataIndex: "transactionType",
+          key: "transactionType",
+        },
+        {
+          title: "Amount",
+          dataIndex: "transactionAmount",
+          key: "transactionAmount",
+        },
+        {
+          title: "Total",
+          dataIndex: "currentBalance",
+          key: "currentBalance",
+        },
+      ]
+    : [
+        {
+          title: "Account No",
+          dataIndex: "accountNo",
+          key: "accountNo",
+        },
+        {
+          title: "Account Name",
+          dataIndex: "fullname",
+          key: "fullname",
+        },
+        {
+          title: "Account Type",
+          dataIndex: "accountType",
+          key: "accountType",
+        },
+        {
+          title: "Particular",
+          dataIndex: "paxName",
+          key: "paxName",
+        },
+        {
+          title: "Passport",
+          dataIndex: "paxNumber",
+          key: "paxNumber",
+        },
+        {
+          title: "Issue Date",
+          dataIndex: "issueDate",
+          key: "issueDate",
+          render: (d) => formatDateV2(d),
+        },
+        {
+          title: "Flight Date",
+          dataIndex: "flightDate",
+          key: "flightDate",
+          render: (d) => formatDateV2(d),
+        },
+        {
+          title: "Sector",
+          dataIndex: "sector",
+          key: "sector",
+        },
+        {
+          title: "AirCode",
+          dataIndex: "airline",
+          key: "airline",
+        },
+        {
+          title: "PNR",
+          dataIndex: "pnr",
+          key: "pnr",
+        },
+        {
+          title: "Type",
+          dataIndex: "transactionType",
+          key: "transactionType",
+        },
+        {
+          title: "Amount",
+          dataIndex: "transactionAmount",
+          key: "transactionAmount",
+        },
+        {
+          title: "Total",
+          dataIndex: "currentBalance",
+          key: "currentBalance",
+        },
+      ];
 
   const onFinish = async (values) => {
     try {
       values.branch = query.branch;
-      if (query.isCustomer) values.accountNo = query.accountNo;
-      if (query.isCustomer) values.fullname = query.fullname;
-      if (query.isCustomer) values.accountType = query.accountType;
-      if (query.isCustomer) values.flightDate = query.flightDate;
 
-      const httpReq = http(token);
+      const httpReq = http();
 
       let body = {
         ...trimData(values),
         page: pagination.current,
         pageSize: pagination.pageSize,
       };
+      console.log(body);
 
       const { data } = await httpReq.post(`/api/transaction/filter`, body);
+      console.log(data);
+      // console.log(body);
 
       setData(data.data);
       setTotal(data.total);

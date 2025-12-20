@@ -95,9 +95,7 @@ export const printBankTransactions = (data) => {
       <table>
         <thead>
           <tr>
-            <th>Account No</th>
             <th>Account Name</th>
-            <th>Account Type</th>
             <th>Particular</th>
             <th>Passport</th>
             <th>Issue Date</th>
@@ -115,9 +113,7 @@ export const printBankTransactions = (data) => {
   data.forEach((txn) => {
     html += `
               <tr>
-                <td>${txn.accountNo}</td>
                 <td>${txn.fullname}</td>
-                <td>${txn.accountType.toUpperCase()}</td>
                 <td>${txn.paxName}</td>
                 <td>${txn.paxNumber}</td>
                 <td>${formatDateV2(txn.issueDate)}</td>
@@ -154,16 +150,14 @@ export const downloadTransaction = (data = []) => {
   //Title
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
-  const title = "Western Bank Transactions Details";
+  const title = "Western Transactions Details";
   const textWidth = doc.getTextWidth(title);
   doc.text(title, (pageWidth - textWidth) / 2, 15);
 
   // Prepare table data
 
   const tableData = data.map((item) => [
-    item.accountNo,
     item.fullname,
-    item.accountType,
     item.paxName,
     item.paxNumber,
     formatDateV2(item.issueDate),
@@ -177,14 +171,13 @@ export const downloadTransaction = (data = []) => {
   ]);
 
   const finalBalance = data.map((item) => item.currentBalance);
+  const fullName = data.map((item) => item.fullname);
 
   // Add transactions table
   doc.autoTable({
     head: [
       [
-        "Account No",
         "Account Name",
-        "Account Type",
         "Particular",
         "Passport",
         "Issue Date",
@@ -229,7 +222,7 @@ export const downloadTransaction = (data = []) => {
       ["Total Credit", totalCredit.toLocaleString("en-IN")],
       ["Total Debit", totalDebit.toLocaleString("en-IN")],
       ["Balance", balance.toLocaleString("en-IN")],
-      ["Current Due", balance.toLocaleString("en-IN")],
+      ["Current Due", finalBalance.toLocaleString("en-IN")],
     ],
     headStyles: { fillColor: [60, 179, 113], halign: "center" }, // green header
     styles: { halign: "right", fontStyle: "bold" },
@@ -240,7 +233,7 @@ export const downloadTransaction = (data = []) => {
   });
 
   // Save PDF
-  doc.save("Bank_Transactions.pdf");
+  doc.save(`${fullName[0]}_Transactions.pdf`);
 };
 
 //npm install jspdf@2.5.1 jspdf-autotable@3.5.25

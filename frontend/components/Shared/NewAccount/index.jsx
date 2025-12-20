@@ -77,6 +77,7 @@ const NewAccount = () => {
       refreshInterval: 1200000,
     }
   );
+  console.log(brandings);
 
   // Bank Account Get
   let bankAccountNo =
@@ -84,6 +85,7 @@ const NewAccount = () => {
   let brandingingId = brandings && brandings?.data[0]?._id;
   // Set Account No
   accountForm.setFieldValue("accountNo", bankAccountNo);
+  console.log(accountForm);
 
   // Create New Account
   const onFinish = async (values) => {
@@ -91,19 +93,21 @@ const NewAccount = () => {
       setLoading(true);
       const finalObj = trimData(values);
       finalObj.profile = photo ? photo : "bankImages/dummy.png";
-      finalObj.signature = signature ? signature : "bankImages/dummy.png";
-      finalObj.document = document ? document : "bankImages/dummy.png";
       finalObj.key = finalObj.email;
       finalObj.userType = "customer";
       finalObj.branch = userInfo?.branch;
       finalObj.createBy = userInfo?.email;
-      const httpReq = http(token);
+      console.log("Before User", finalObj);
+
+      const httpReq = http();
       const { data } = await httpReq.post(`/api/users`, finalObj);
       finalObj.customerLoginId = data?.data?._id;
       const obj = {
         email: finalObj.email,
         password: finalObj.password,
       };
+      console.log("After User", finalObj);
+
       await httpReq.post(`/api/customers`, finalObj);
       await httpReq.post(`/api/send-email`, obj);
       await httpReq.put(`/api/branding/${brandingingId}`, { bankAccountNo });
@@ -111,9 +115,7 @@ const NewAccount = () => {
       accountForm.resetFields();
       mutate(`/api/branding`);
       setPhoto(null);
-      setSignature(null);
-      setDocuments(null);
-      setNo(no + 1);
+      setNo((pre) => pre + 1);
       setAccountModal(false);
       messageApi.success("Customer Created Successfully!");
     } catch (error) {
@@ -184,7 +186,6 @@ const NewAccount = () => {
       setNo(no + 1);
       setEdit(null);
       setPhoto(null);
-      setSignature(null);
       setEdit(null);
       setAccountModal(false);
       accountForm.resetFields();
