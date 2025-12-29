@@ -30,7 +30,7 @@ const TransactionTable = ({ query = {} }) => {
   const [branch, setBranch] = useState(query.branch || "");
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
   });
 
   const [loading, setLoading] = useState(false);

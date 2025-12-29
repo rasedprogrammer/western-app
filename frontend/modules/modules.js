@@ -170,7 +170,7 @@ export const downloadTransaction = (data = []) => {
     item.currentBalance,
   ]);
 
-  const finalBalance = data.map((item) => item.currentBalance);
+  const finalBalance = data.map((item) => item.currentBalance).at(-1);
   const fullName = data.map((item) => item.fullname);
 
   // Add transactions table
@@ -221,7 +221,6 @@ export const downloadTransaction = (data = []) => {
     body: [
       ["Total Credit", totalCredit.toLocaleString("en-IN")],
       ["Total Debit", totalDebit.toLocaleString("en-IN")],
-      ["Balance", balance.toLocaleString("en-IN")],
       ["Current Due", finalBalance.toLocaleString("en-IN")],
     ],
     headStyles: { fillColor: [60, 179, 113], halign: "center" }, // green header
